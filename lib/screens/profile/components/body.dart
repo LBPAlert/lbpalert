@@ -1,4 +1,7 @@
+import 'package:lbpalert/screens/notifications/notifications_screen.dart';
+import 'package:lbpalert/screens/settings/settings_screen.dart';
 import 'package:lbpalert/screens/splash/splash_screen.dart';
+import 'package:lbpalert/screens/update_account/update_account_screen.dart';
 import 'package:lbpalert/services/auth.dart';
 import 'package:flutter/material.dart';
 
@@ -19,17 +22,23 @@ class Body extends StatelessWidget {
           ProfileMenu(
             text: "My Account",
             icon: "assets/icons/User Icon.svg",
-            press: () => {},
+            press: () {
+              Navigator.pushNamed(context, UpdateAccountScreen.routeName);
+            },
           ),
           ProfileMenu(
             text: "Notifications",
             icon: "assets/icons/Bell.svg",
-            press: () {},
+            press: () {
+              Navigator.pushNamed(context, NotificationScreen.routeName);
+            },
           ),
           ProfileMenu(
             text: "Settings",
             icon: "assets/icons/Settings.svg",
-            press: () {},
+            press: () {
+              Navigator.pushNamed(context, SettingsScreen.routeName);
+            },
           ),
           ProfileMenu(
             text: "Log Out",

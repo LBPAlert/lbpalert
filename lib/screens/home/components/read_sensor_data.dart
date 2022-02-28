@@ -1,8 +1,10 @@
 import 'dart:async';
 // import 'dart:html';
 import 'package:flutter/material.dart';
+import 'package:lbpalert/constants.dart';
 import '../../../size_config.dart';
 import 'package:firebase_database/firebase_database.dart';
+import 'package:vibration/vibration.dart';
 
 // might need to change to StaefulWidget
 class ReadSensorData extends StatefulWidget {
@@ -11,7 +13,7 @@ class ReadSensorData extends StatefulWidget {
 }
 
 class _ReadSensorDataState extends State<ReadSensorData> {
-  String sensorData = "Insert Data Here";
+  String sensorData = "0";
 
   DatabaseReference ref = FirebaseDatabase.instance.ref('SWE_test(1)');
 
@@ -34,6 +36,10 @@ class _ReadSensorDataState extends State<ReadSensorData> {
         sensorData = '${event.snapshot.value}';
       });
     });
+
+    if (int.parse(sensorData) >= 8) {
+      Vibration.vibrate(duration: 2000);
+    }
   }
 
   @override
@@ -41,29 +47,55 @@ class _ReadSensorDataState extends State<ReadSensorData> {
     return Container(
       height: 200,
       width: double.infinity,
-      margin: EdgeInsets.all(getProportionateScreenWidth(20)),
+      margin: EdgeInsets.only(
+          top: getProportionateScreenWidth(5),
+          bottom: getProportionateScreenWidth(5)),
       padding: EdgeInsets.symmetric(
         horizontal: getProportionateScreenWidth(20),
         vertical: getProportionateScreenWidth(15),
       ),
       decoration: BoxDecoration(
-        color: Color(0xFF4A3298),
+        color: Color.fromARGB(255, 63, 62, 62),
         borderRadius: BorderRadius.circular(20),
       ),
-      child: Text.rich(
-        TextSpan(
-          style: TextStyle(color: Colors.white),
+      child: Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
+        Column(
+          mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            TextSpan(
-              text: sensorData,
-              style: TextStyle(
-                fontSize: getProportionateScreenWidth(24),
-                fontWeight: FontWeight.bold,
+            Text.rich(
+              TextSpan(
+                text: "Back Health",
+                style: TextStyle(
+                  fontSize: getProportionateScreenWidth(15),
+                  fontWeight: FontWeight.normal,
+                  color: kPrimaryColor,
+                ),
+              ),
+            ),
+            Text.rich(
+              TextSpan(
+                style: TextStyle(color: Colors.white),
+                children: [
+                  TextSpan(
+                    text: sensorData,
+                    style: TextStyle(
+                      fontSize: getProportionateScreenWidth(28),
+                      fontWeight: FontWeight.bold,
+                      color: Colors.white,
+                    ),
+                  ),
+                ],
               ),
             ),
           ],
         ),
-      ),
+        Container(
+          child: CircleAvatar(
+            radius: getProportionateScreenWidth(85),
+            backgroundColor: Color.fromARGB(255, 9, 228, 38),
+          ),
+        ),
+      ]),
     );
   }
 

@@ -1,4 +1,9 @@
 import 'package:flutter/widgets.dart';
+import 'package:lbpalert/screens/change_password/change_password_screen.dart';
+import 'package:lbpalert/screens/notifications/notifications_screen.dart';
+import 'package:lbpalert/screens/set_target/set_target_screen.dart';
+import 'package:lbpalert/screens/settings/settings_screen.dart';
+import 'package:lbpalert/screens/update_account/update_account_screen.dart';
 import 'screens/trend/trend_screen.dart';
 import 'screens/complete_profile/complete_profile_screen.dart';
 import 'screens/forgot_password/forgot_password_screen.dart';
@@ -24,4 +29,9 @@ final Map<String, WidgetBuilder> routes = {
   HomeScreen.routeName: (context) => HomeScreen(),
   ProfileScreen.routeName: (context) => ProfileScreen(),
   TrendScreen.routeName: (context) => TrendScreen(),
+  SettingsScreen.routeName: (context) => SettingsScreen(),
+  UpdateAccountScreen.routeName: (context) => UpdateAccountScreen(),
+  SetTargetScreen.routeName: (context) => SetTargetScreen(),
+  ChangePasswordScreen.routeName: (context) => ChangePasswordScreen(),
+  NotificationScreen.routeName: (context) => NotificationScreen(),
 };
