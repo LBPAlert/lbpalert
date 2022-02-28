@@ -1,26 +1,27 @@
 import 'package:flutter/material.dart';
+import '../../../size_config.dart';
 
 class Body extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    return Column(
-      children: [
-        ListTile(
-          leading: Icon(Icons.nordic_walking),
-          title: Text("Daily Average"),
-          trailing: Text('4.00'),
-        ),
-        ListTile(
-          leading: Icon(Icons.nordic_walking),
-          title: Text("Daily Average"),
-          trailing: Text('4.00'),
-        ),
-        ListTile(
-          leading: Icon(Icons.nordic_walking),
-          title: Text("Daily Average"),
-          trailing: Text('4.00'),
-        ),
-      ],
+    return Container(
+      width: double.infinity,
+      margin: EdgeInsets.only(
+          top: getProportionateScreenWidth(100),
+          bottom: getProportionateScreenWidth(5)),
+      child: Column(
+        children: [
+          Container(
+            padding: EdgeInsets.all(getProportionateScreenWidth(15)),
+            height: getProportionateScreenWidth(350),
+            width: double.infinity,
+            decoration: BoxDecoration(
+              color: Color(0xFFFFECDF),
+              borderRadius: BorderRadius.circular(10),
+            ),
+          )
+        ],
+      ),
     );
   }
 }

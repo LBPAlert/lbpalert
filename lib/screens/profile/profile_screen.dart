@@ -9,8 +9,14 @@ class ProfileScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: Colors.black,
       appBar: AppBar(
-        title: Text("Profile"),
+        foregroundColor: Colors.white,
+        backgroundColor: Colors.black,
+        title: Text(
+          "Profile",
+          style: TextStyle(color: Colors.white),
+        ),
       ),
       body: Body(),
       bottomNavigationBar: CustomBottomNavBar(selectedMenu: MenuState.profile),

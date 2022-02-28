@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
+import 'package:lbpalert/screens/home/components/date.dart';
+import 'package:lbpalert/screens/home/components/greetings.dart';
+import 'package:lbpalert/screens/home/components/section_title.dart';
 
 import '../../../size_config.dart';
-
 import 'read_sensor_data.dart';
-import 'home_header.dart';
+import 'averages.dart';
 
 class Body extends StatelessWidget {
   @override
@@ -12,12 +14,16 @@ class Body extends StatelessWidget {
       child: SingleChildScrollView(
         child: Column(
           children: [
-            SizedBox(height: getProportionateScreenHeight(20)),
-            //HomeHeader(),
             SizedBox(height: getProportionateScreenWidth(10)),
+            DateSection(today: DateTime.now()),
+            SizedBox(height: getProportionateScreenWidth(10)),
+            Greetings(),
+            SizedBox(height: getProportionateScreenWidth(20)),
+            SectionTitle(title: 'Activity'),
             ReadSensorData(),
             SizedBox(height: getProportionateScreenWidth(30)),
-            SizedBox(height: getProportionateScreenWidth(30)),
+            SectionTitle(title: 'Trends'),
+            Averages(),
           ],
         ),
       ),

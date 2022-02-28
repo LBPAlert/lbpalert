@@ -17,7 +17,7 @@ class _BodyState extends State<Body> {
   List<Map<String, String>> splashData = [
     {
       "text": "Welcome to LBPA, Take control of your lower back muscles now!",
-      "image": "assets/images/back.png"
+      "image": "assets/images/icon.png"
     },
     // {
     //   "text": ,
