@@ -123,7 +123,6 @@ output.json
 **/ios/Flutter/flutter_export_environment.sh
 **/ios/ServiceDefinitions.json
 **/ios/Runner/GeneratedPluginRegistrant.*
-**/ios/Runner.xcodeproj/project.pbxproj
 
 # macOS
 **/macos/Flutter/GeneratedPluginRegistrant.swift
