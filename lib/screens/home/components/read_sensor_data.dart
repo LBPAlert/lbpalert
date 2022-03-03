@@ -4,7 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:lbpalert/constants.dart';
 import '../../../size_config.dart';
 import 'package:firebase_database/firebase_database.dart';
-import 'package:vibration/vibration.dart';
+//import 'package:vibration/vibration.dart';
 
 // might need to change to StaefulWidget
 class ReadSensorData extends StatefulWidget {
@@ -37,9 +37,9 @@ class _ReadSensorDataState extends State<ReadSensorData> {
       });
     });
 
-    if (int.parse(sensorData) >= 8) {
-      Vibration.vibrate(duration: 2000);
-    }
+    //   if (int.parse(sensorData) >= 8) {
+    //     Vibration.vibrate(duration: 2000);
+    //   }
   }
 
   @override
