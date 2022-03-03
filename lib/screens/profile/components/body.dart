@@ -3,6 +3,7 @@ import 'package:lbpalert/screens/settings/settings_screen.dart';
 import 'package:lbpalert/screens/splash/splash_screen.dart';
 import 'package:lbpalert/screens/update_account/update_account_screen.dart';
 import 'package:lbpalert/services/auth.dart';
+import '../../../size_config.dart';
 import 'package:flutter/material.dart';
 
 import 'profile_menu.dart';
@@ -18,14 +19,24 @@ class Body extends StatelessWidget {
       child: Column(
         children: [
           ProfilePic(),
-          SizedBox(height: 20),
-          ProfileMenu(
-            text: "My Account",
-            icon: "assets/icons/User Icon.svg",
-            press: () {
-              Navigator.pushNamed(context, UpdateAccountScreen.routeName);
-            },
+          SizedBox(height: 10),
+          Text(
+            "Abe Illoh",
+            style: TextStyle(
+              fontSize: getProportionateScreenWidth(25),
+              fontWeight: FontWeight.bold,
+              color: Colors.white,
+            ),
           ),
+          Text(
+            "abeilloh@gmail.com",
+            style: TextStyle(
+              fontSize: getProportionateScreenWidth(15),
+              fontWeight: FontWeight.normal,
+              color: Colors.white,
+            ),
+          ),
+          SizedBox(height: 40),
           ProfileMenu(
             text: "Notifications",
             icon: "assets/icons/Bell.svg",

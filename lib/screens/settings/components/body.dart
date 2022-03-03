@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:lbpalert/screens/change_password/change_password_screen.dart';
 import '../../../size_config.dart';
-import '../../profile/components/profile_pic.dart';
 import 'settings_menu.dart';
 import 'package:lbpalert/screens/set_target/set_target_screen.dart';
+import 'package:lbpalert/screens/update_account/update_account_screen.dart';
 //import 'package:flutter_settings_screens/flutter_settings_screens.dart';
 
 class Body extends StatelessWidget {
@@ -17,8 +17,13 @@ class Body extends StatelessWidget {
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          //ProfilePic(),
-          //SizedBox(height: 20),
+          SettingsMenu(
+            text: "Edit Profile",
+            icon: "assets/icons/User Icon.svg",
+            press: () {
+              Navigator.pushNamed(context, UpdateAccountScreen.routeName);
+            },
+          ),
           SettingsMenu(
             text: "Change Password",
             icon: "assets/icons/change-password.svg",

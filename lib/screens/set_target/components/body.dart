@@ -70,7 +70,7 @@ class _BodyState extends State<Body> {
           child: DefaultButton(
             text: "Save",
             press: () {
-              Navigator.pushNamed(context, SettingsScreen.routeName);
+              Navigator.pop(context);
             },
           ),
         ),

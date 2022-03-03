@@ -1,6 +1,6 @@
 import 'package:lbpalert/helper/keyboard.dart';
 import 'package:lbpalert/screens/login_success/login_success_screen.dart';
-import 'package:lbpalert/screens/profile/profile_screen.dart';
+import 'package:lbpalert/screens/settings/settings_screen.dart';
 import 'package:lbpalert/services/database.dart';
 import 'package:flutter/material.dart';
 import '/components/custom_surfix_icon.dart';
@@ -31,7 +31,7 @@ class _UpdateFormState extends State<UpdateForm> {
           DefaultButton(
             text: "Save",
             press: () {
-              Navigator.pushNamed(context, ProfileScreen.routeName);
+              Navigator.pop(context);
             },
           ),
         ],

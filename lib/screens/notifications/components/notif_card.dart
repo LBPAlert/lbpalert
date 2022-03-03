@@ -39,7 +39,10 @@ class NotifCard extends StatelessWidget {
           children: [
             Text(
               notification.item.title,
-              style: TextStyle(color: Colors.black, fontSize: 16),
+              style: TextStyle(
+                  color: Colors.white,
+                  fontSize: 16,
+                  fontWeight: FontWeight.bold),
               maxLines: 2,
             ),
             SizedBox(height: 10),

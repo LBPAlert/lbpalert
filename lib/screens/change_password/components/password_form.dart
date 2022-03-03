@@ -48,7 +48,7 @@ class _PasswordFormState extends State<PasswordForm> {
           DefaultButton(
             text: "Save",
             press: () {
-              Navigator.pushNamed(context, SettingsScreen.routeName);
+              Navigator.pop(context);
             },
           ),
         ],
