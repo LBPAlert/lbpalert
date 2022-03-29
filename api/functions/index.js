@@ -1,6 +1,7 @@
 const functions = require("firebase-functions");
 const tf = require("@tensorflow/tfjs");
 
+
 exports.api = functions.https.onRequest((req, res) => {
     res.set("Access-Control-Allow-Origin", "*");
     res.set("Access-Control-Allow-Methods", "GET, POST");
@@ -22,9 +23,9 @@ exports.api = functions.https.onRequest((req, res) => {
 
 async function predict(a,b,c,d) {
     
-//   let model = await tf.loadLayersModel(
-//     "https://firebasestorage.googleapis.com/v0/b/lbpalert.appspot.com/o/model.json?alt=media&token=a8d7b26f-00ae-4c8f-8eea-3b12aa9ccd6b"
-//   );
+  let model = await tf.loadLayersModel(
+    config.MODEL_API_TOKEN
+  );
 
   a = tf.tensor2d(a);
   b = tf.tensor2d(b);
