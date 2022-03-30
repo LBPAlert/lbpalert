@@ -5,11 +5,11 @@ class DatabaseService {
   final String uid;
   DatabaseService({required this.uid});
 
-  final DatabaseReference users = FirebaseDatabase.instance.ref("users");
+  final DatabaseReference _users = FirebaseDatabase.instance.ref("users");
 
   Future UpdateUserData(String firstname, String lastname, String phoneNum,
       String address) async {
-    return await users
+    return await _users
         .child(uid)
         .set({
           'firstname': firstname,
@@ -32,6 +32,30 @@ class DatabaseService {
   }
 
   Stream<FirebaseUserData> get userData {
-    return users.child(uid).onChildChanged.map(_userDataFromSnapshot);
+    return _users.child(uid).onChildChanged.map(_userDataFromSnapshot);
+  }
+
+  DatabaseReference get getChild {
+    return _users.child(uid);
+  }
+
+  String getFirstName(DatabaseEvent event) {
+    return '${(event.snapshot.value as dynamic)['firstname']}!';
+  }
+
+  String getLastName(DatabaseEvent event) {
+    return '${(event.snapshot.value as dynamic)['lastname']}';
+  }
+
+  String getFullName(DatabaseEvent event) {
+    return '${(event.snapshot.value as dynamic)['firstname']}, ${(event.snapshot.value as dynamic)['lastname']}';
+  }
+
+  String getPhoneNum(DatabaseEvent event) {
+    return '${(event.snapshot.value as dynamic)['phone_number']}';
+  }
+
+  String getAddress(DatabaseEvent event) {
+    return '${(event.snapshot.value as dynamic)['address']}';
   }
 }

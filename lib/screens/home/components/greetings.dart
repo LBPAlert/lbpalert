@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_database/firebase_database.dart';
-import 'package:lbpalert/models/user.dart';
 import 'package:lbpalert/services/database.dart';
 import '../../../size_config.dart';
 import 'package:lbpalert/services/auth.dart';
@@ -13,25 +12,25 @@ class Greetings extends StatefulWidget {
 class _GreetingsState extends State<Greetings> {
   String name = 'there!';
 
-  DatabaseReference ref = FirebaseDatabase.instance.ref('users');
   final AuthService _auth = AuthService();
 
   @override
   void initState() {
     super.initState();
-    getUserName();
+    getUserFirstName();
   }
 
-  void getUserName() {
+  void getUserFirstName() {
     final uid = _auth.getUserID;
+    final DatabaseService _users = DatabaseService(uid: uid);
 
-    DatabaseReference child = ref.child(uid);
+    DatabaseReference child = _users.getChild;
     Stream<DatabaseEvent> dailyStream = child.onValue;
 
     // Subscribe to the stream!
     dailyStream.listen((DatabaseEvent event) {
       setState(() {
-        name = '${(event.snapshot.value as dynamic)['firstname']}!';
+        name = _users.getFirstName(event);
       });
     });
   }
