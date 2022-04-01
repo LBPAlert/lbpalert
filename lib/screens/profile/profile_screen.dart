@@ -13,13 +13,13 @@ class ProfileScreen extends StatelessWidget {
       appBar: AppBar(
         foregroundColor: Colors.white,
         backgroundColor: Colors.black,
-        title: Text(
-          "Profile",
-          style: TextStyle(color: Colors.white),
-        ),
+        // title: Text(
+        //   "Profile",
+        //   style: TextStyle(color: Colors.white),
+        // ),
       ),
       body: Body(),
-      bottomNavigationBar: CustomBottomNavBar(selectedMenu: MenuState.profile),
+      //bottomNavigationBar: CustomBottomNavBar(selectedMenu: MenuState.profile),
     );
   }
 }
