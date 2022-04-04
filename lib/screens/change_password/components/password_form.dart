@@ -44,6 +44,7 @@ class _PasswordFormState extends State<PasswordForm> {
           buildPasswordFormField(),
           SizedBox(height: getProportionateScreenHeight(30)),
           buildConfirmPassFormField(),
+          FormError(errors: errors),
           SizedBox(height: getProportionateScreenHeight(40)),
           DefaultButton(
             text: "Save",

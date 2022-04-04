@@ -15,6 +15,27 @@ class UpdateForm extends StatefulWidget {
 }
 
 class _UpdateFormState extends State<UpdateForm> {
+  final _formKey = GlobalKey<FormState>();
+  final List<String?> errors = [];
+  String? firstName;
+  String? lastName;
+  String? phoneNumber;
+  String? address;
+
+  void addError({String? error}) {
+    if (!errors.contains(error))
+      setState(() {
+        errors.add(error);
+      });
+  }
+
+  void removeError({String? error}) {
+    if (errors.contains(error))
+      setState(() {
+        errors.remove(error);
+      });
+  }
+
   @override
   Widget build(BuildContext context) {
     return Form(
@@ -27,6 +48,7 @@ class _UpdateFormState extends State<UpdateForm> {
           buildPhoneNumberFormField(),
           SizedBox(height: getProportionateScreenHeight(30)),
           buildAddressFormField(),
+          FormError(errors: errors),
           SizedBox(height: getProportionateScreenHeight(40)),
           DefaultButton(
             text: "Save",
@@ -41,6 +63,20 @@ class _UpdateFormState extends State<UpdateForm> {
 
   TextFormField buildAddressFormField() {
     return TextFormField(
+      onSaved: (newValue) => address = newValue,
+      onChanged: (value) {
+        if (value.isNotEmpty) {
+          removeError(error: kAddressNullError);
+        }
+        address = value;
+      },
+      validator: (value) {
+        if (value!.isEmpty) {
+          addError(error: kAddressNullError);
+          return "";
+        }
+        return null;
+      },
       decoration: InputDecoration(
         labelText: "Address",
         hintText: "Enter your address",
@@ -56,6 +92,20 @@ class _UpdateFormState extends State<UpdateForm> {
   TextFormField buildPhoneNumberFormField() {
     return TextFormField(
       keyboardType: TextInputType.phone,
+      onSaved: (newValue) => phoneNumber = newValue,
+      onChanged: (value) {
+        if (value.isNotEmpty) {
+          removeError(error: kPhoneNumberNullError);
+        }
+        phoneNumber = value;
+      },
+      validator: (value) {
+        if (value!.isEmpty) {
+          addError(error: kPhoneNumberNullError);
+          return "";
+        }
+        return null;
+      },
       decoration: InputDecoration(
         labelText: "Phone Number",
         hintText: "Enter your phone number",
@@ -67,6 +117,20 @@ class _UpdateFormState extends State<UpdateForm> {
 
   TextFormField buildLastNameFormField() {
     return TextFormField(
+      onSaved: (newValue) => lastName = newValue,
+      onChanged: (value) {
+        if (value.isNotEmpty) {
+          removeError(error: kNamelNullError);
+        }
+        lastName = value;
+      },
+      validator: (value) {
+        if (value!.isEmpty) {
+          addError(error: kNamelNullError);
+          return "";
+        }
+        return null;
+      },
       decoration: InputDecoration(
         labelText: "Last Name",
         hintText: "Enter your last name",
@@ -80,6 +144,20 @@ class _UpdateFormState extends State<UpdateForm> {
 
   TextFormField buildFirstNameFormField() {
     return TextFormField(
+      onSaved: (newValue) => firstName = newValue,
+      onChanged: (value) {
+        if (value.isNotEmpty) {
+          removeError(error: kNamelNullError);
+        }
+        firstName = value;
+      },
+      validator: (value) {
+        if (value!.isEmpty) {
+          addError(error: kNamelNullError);
+          return "";
+        }
+        return null;
+      },
       decoration: InputDecoration(
         labelText: "First Name",
         hintText: "Enter your first name",
