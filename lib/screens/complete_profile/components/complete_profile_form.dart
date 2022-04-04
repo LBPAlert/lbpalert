@@ -1,4 +1,5 @@
 import 'package:lbpalert/helper/keyboard.dart';
+import 'package:lbpalert/screens/home/home_screen.dart';
 import 'package:lbpalert/screens/login_success/login_success_screen.dart';
 import 'package:lbpalert/services/database.dart';
 import 'package:flutter/material.dart';
@@ -61,7 +62,7 @@ class _CompleteProfileFormState extends State<CompleteProfileForm> {
                 await DatabaseService(uid: user_id).UpdateUserData(
                     firstName!, lastName!, phoneNumber!, address!);
                 KeyboardUtil.hideKeyboard(context);
-                Navigator.pushNamed(context, LoginSuccessScreen.routeName);
+                Navigator.pushNamed(context, HomeScreen.routeName);
               }
             },
           ),

@@ -9,7 +9,15 @@ import 'package:flutter/material.dart';
 import 'profile_menu.dart';
 import 'profile_pic.dart';
 
-class Body extends StatelessWidget {
+class Body extends StatefulWidget {
+  @override
+  State<Body> createState() => _BodyState();
+}
+
+class _BodyState extends State<Body> {
+  String username = "John Doe";
+  String useremail = "johndoe@yahooboys.com";
+
   final AuthService _auth = AuthService();
 
   @override
@@ -21,7 +29,7 @@ class Body extends StatelessWidget {
           ProfilePic(),
           SizedBox(height: 10),
           Text(
-            "Abe Illoh",
+            username,
             style: TextStyle(
               fontSize: getProportionateScreenWidth(25),
               fontWeight: FontWeight.bold,
@@ -29,7 +37,7 @@ class Body extends StatelessWidget {
             ),
           ),
           Text(
-            "abeilloh@gmail.com",
+            useremail,
             style: TextStyle(
               fontSize: getProportionateScreenWidth(15),
               fontWeight: FontWeight.normal,

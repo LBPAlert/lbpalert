@@ -1,3 +1,4 @@
+import 'package:lbpalert/screens/home/home_screen.dart';
 import 'package:lbpalert/services/auth.dart';
 import 'package:flutter/material.dart';
 import '/components/custom_surfix_icon.dart';
@@ -45,9 +46,10 @@ class _SignFormState extends State<SignForm> {
       child: Column(
         children: [
           buildEmailFormField(),
-          SizedBox(height: getProportionateScreenHeight(30)),
+          SizedBox(height: getProportionateScreenHeight(18)),
           buildPasswordFormField(),
-          SizedBox(height: getProportionateScreenHeight(30)),
+          Text(error, style: TextStyle(color: kTextColor, fontSize: 14.0)),
+          FormError(errors: errors),
           Row(
             children: [
               Checkbox(
@@ -71,7 +73,6 @@ class _SignFormState extends State<SignForm> {
               )
             ],
           ),
-          FormError(errors: errors),
           SizedBox(height: getProportionateScreenHeight(20)),
           DefaultButton(
             text: "Sign In",
@@ -87,13 +88,12 @@ class _SignFormState extends State<SignForm> {
                 } else {
                   // if all are valid then go to success screen
                   KeyboardUtil.hideKeyboard(context);
-                  Navigator.pushNamed(context, LoginSuccessScreen.routeName);
+                  Navigator.pushNamed(context, HomeScreen.routeName);
                 }
               }
             },
           ),
           SizedBox(height: 12),
-          Text(error, style: TextStyle(color: kTextColor, fontSize: 14.0))
         ],
       ),
     );
@@ -115,10 +115,7 @@ class _SignFormState extends State<SignForm> {
         if (value!.isEmpty) {
           addError(error: kPassNullError);
           return "";
-        } else if (value.length < 8) {
-          addError(error: kShortPassError);
-          return "";
-        }
+        } //password too short was here
         return null;
       },
       decoration: InputDecoration(
@@ -165,3 +162,8 @@ class _SignFormState extends State<SignForm> {
     );
   }
 }
+
+// else if (value.length < 8) {
+//           addError(error: kShortPassError);
+//           return "";
+//         }
