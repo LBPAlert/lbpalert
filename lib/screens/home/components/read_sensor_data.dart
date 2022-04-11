@@ -1,7 +1,7 @@
 import 'dart:async';
-// import 'dart:html';
 import 'package:flutter/material.dart';
 import 'package:lbpalert/constants.dart';
+import 'package:lbpalert/services/api.dart';
 import '../../../size_config.dart';
 import 'package:firebase_database/firebase_database.dart';
 //import 'package:vibration/vibration.dart';
@@ -14,6 +14,8 @@ class ReadSensorData extends StatefulWidget {
 
 class _ReadSensorDataState extends State<ReadSensorData> {
   String sensorData = "0";
+  String apiData = "0";
+  Color predictiveColor = Colors.green;
 
   DatabaseReference ref = FirebaseDatabase.instance.ref('SWE_test(1)');
 
@@ -21,6 +23,7 @@ class _ReadSensorDataState extends State<ReadSensorData> {
   void initState() {
     super.initState();
     activateListeners();
+    getPrediction();
   }
 
   void activateListeners() {
@@ -29,9 +32,7 @@ class _ReadSensorDataState extends State<ReadSensorData> {
 
     // Subscribe to the stream!
     dailyStream.listen((DatabaseEvent event) {
-      print('Event Type: ${event.type}'); // DatabaseEventType.value;
-      print('Snapshot: ${event.snapshot}'); // DataSnapshot
-      print('Value: ${event.snapshot.value}');
+      print('Database Value: ${event.snapshot.value}');
       setState(() {
         sensorData = '${event.snapshot.value}';
       });
@@ -40,6 +41,27 @@ class _ReadSensorDataState extends State<ReadSensorData> {
     //   if (int.parse(sensorData) >= 8) {
     //     Vibration.vibrate(duration: 2000);
     //   }
+  }
+
+  void getPrediction() async {
+    makePostRequest().then((prediction) {
+      setState(() {
+        apiData = prediction;
+      });
+      getPredictiveColor(prediction);
+    });
+  }
+
+  void getPredictiveColor(prediction) {
+    if (int.parse(prediction) >= 5 && int.parse(prediction) <= 8) {
+      setState(() {
+        predictiveColor = Colors.orange;
+      });
+    } else if (int.parse(prediction) > 8) {
+      setState(() {
+        predictiveColor = Colors.red;
+      });
+    }
   }
 
   @override
@@ -77,7 +99,7 @@ class _ReadSensorDataState extends State<ReadSensorData> {
                 style: TextStyle(color: Colors.white),
                 children: [
                   TextSpan(
-                    text: sensorData,
+                    text: apiData,
                     style: TextStyle(
                       fontSize: getProportionateScreenWidth(28),
                       fontWeight: FontWeight.bold,
@@ -92,7 +114,7 @@ class _ReadSensorDataState extends State<ReadSensorData> {
         Container(
           child: CircleAvatar(
             radius: getProportionateScreenWidth(85),
-            backgroundColor: Color.fromARGB(255, 9, 228, 38),
+            backgroundColor: predictiveColor,
           ),
         ),
       ]),
