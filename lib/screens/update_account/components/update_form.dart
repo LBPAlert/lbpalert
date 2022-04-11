@@ -1,6 +1,6 @@
 import 'package:lbpalert/helper/keyboard.dart';
-import 'package:lbpalert/screens/login_success/login_success_screen.dart';
 import 'package:lbpalert/screens/settings/settings_screen.dart';
+import 'package:lbpalert/services/auth.dart';
 import 'package:lbpalert/services/database.dart';
 import 'package:flutter/material.dart';
 import '/components/custom_surfix_icon.dart';
@@ -15,6 +15,8 @@ class UpdateForm extends StatefulWidget {
 }
 
 class _UpdateFormState extends State<UpdateForm> {
+  final AuthService _auth = AuthService();
+
   final _formKey = GlobalKey<FormState>();
   final List<String?> errors = [];
   String? firstName;
@@ -39,6 +41,7 @@ class _UpdateFormState extends State<UpdateForm> {
   @override
   Widget build(BuildContext context) {
     return Form(
+      key: _formKey,
       child: Column(
         children: [
           buildFirstNameFormField(),
@@ -52,8 +55,15 @@ class _UpdateFormState extends State<UpdateForm> {
           SizedBox(height: getProportionateScreenHeight(40)),
           DefaultButton(
             text: "Save",
-            press: () {
-              Navigator.pop(context);
+            press: () async {
+              if (_formKey.currentState!.validate()) {
+                _formKey.currentState!.save();
+                final user_id = _auth.getUserID;
+                await DatabaseService(uid: user_id).UpdateUserData(
+                    firstName!, lastName!, phoneNumber!, address!);
+                KeyboardUtil.hideKeyboard(context);
+                Navigator.pushNamed(context, SettingsScreen.routeName);
+              }
             },
           ),
         ],

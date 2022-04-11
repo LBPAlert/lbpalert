@@ -48,7 +48,7 @@ class DatabaseService {
   }
 
   String getFullName(DatabaseEvent event) {
-    return '${(event.snapshot.value as dynamic)['firstname']}, ${(event.snapshot.value as dynamic)['lastname']}';
+    return '${(event.snapshot.value as dynamic)['firstname']} ${(event.snapshot.value as dynamic)['lastname']}';
   }
 
   String getPhoneNum(DatabaseEvent event) {
