@@ -1,8 +1,10 @@
+import 'package:firebase_database/firebase_database.dart';
 import 'package:lbpalert/screens/notifications/notifications_screen.dart';
 import 'package:lbpalert/screens/settings/settings_screen.dart';
 import 'package:lbpalert/screens/splash/splash_screen.dart';
 import 'package:lbpalert/screens/update_account/update_account_screen.dart';
 import 'package:lbpalert/services/auth.dart';
+import 'package:lbpalert/services/database.dart';
 import '../../../size_config.dart';
 import 'package:flutter/material.dart';
 
@@ -15,10 +17,35 @@ class Body extends StatefulWidget {
 }
 
 class _BodyState extends State<Body> {
-  String username = "John Doe";
-  String useremail = "johndoe@yahooboys.com";
-
   final AuthService _auth = AuthService();
+  String user_name = "John Doe";
+  String user_email = "johndoe@yahooboys.com";
+
+  @override
+  void initState() {
+    super.initState();
+    getUserFullName();
+  }
+
+  String updateEmail() {
+    user_email = _auth.getUserEmail!;
+    return user_email;
+  }
+
+  void getUserFullName() {
+    final uid = _auth.getUserID;
+    final DatabaseService _users = DatabaseService(uid: uid);
+
+    DatabaseReference child = _users.getChild;
+    Stream<DatabaseEvent> dailyStream = child.onValue;
+
+    // Subscribe to the stream!
+    dailyStream.listen((DatabaseEvent event) {
+      setState(() {
+        user_name = _users.getFullName(event);
+      });
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -29,7 +56,7 @@ class _BodyState extends State<Body> {
           ProfilePic(),
           SizedBox(height: 10),
           Text(
-            username,
+            user_name,
             style: TextStyle(
               fontSize: getProportionateScreenWidth(25),
               fontWeight: FontWeight.bold,
@@ -37,7 +64,7 @@ class _BodyState extends State<Body> {
             ),
           ),
           Text(
-            useremail,
+            user_email = updateEmail(),
             style: TextStyle(
               fontSize: getProportionateScreenWidth(15),
               fontWeight: FontWeight.normal,

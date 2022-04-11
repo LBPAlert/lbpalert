@@ -1,8 +1,7 @@
 import 'package:lbpalert/helper/keyboard.dart';
-import 'package:lbpalert/screens/login_success/login_success_screen.dart';
-import 'package:lbpalert/screens/settings/settings_screen.dart';
-import 'package:lbpalert/services/database.dart';
 import 'package:flutter/material.dart';
+import 'package:lbpalert/screens/settings/settings_screen.dart';
+import '../../../services/auth.dart';
 import '/components/custom_surfix_icon.dart';
 import '/components/default_button.dart';
 import '/components/form_error.dart';
@@ -15,8 +14,13 @@ class PasswordForm extends StatefulWidget {
 }
 
 class _PasswordFormState extends State<PasswordForm> {
+  final AuthService _auth = AuthService();
+
   String error = "";
+  final _formKey = GlobalKey<FormState>();
   final List<String?> errors = [];
+  String? user_email;
+  String? old_password;
   String? password;
   String? confirm_password;
 
@@ -37,6 +41,7 @@ class _PasswordFormState extends State<PasswordForm> {
   @override
   Widget build(BuildContext context) {
     return Form(
+      key: _formKey,
       child: Column(
         children: [
           buildOldPasswordFormField(),
@@ -48,8 +53,22 @@ class _PasswordFormState extends State<PasswordForm> {
           SizedBox(height: getProportionateScreenHeight(40)),
           DefaultButton(
             text: "Save",
-            press: () {
-              Navigator.pop(context);
+            press: () async {
+              if (_formKey.currentState!.validate()) {
+                _formKey.currentState!.save();
+                user_email = _auth.getUserEmail;
+                dynamic result = await _auth.changePassword(
+                    user_email!, old_password!, password!);
+                if (result == null) {
+                  setState(() {
+                    error = "Please supply a valid current password";
+                  });
+                } else {
+                  // if all are valid then go to success screen
+                  KeyboardUtil.hideKeyboard(context);
+                  Navigator.pushNamed(context, SettingsScreen.routeName);
+                }
+              }
             },
           ),
         ],
@@ -126,7 +145,7 @@ class _PasswordFormState extends State<PasswordForm> {
   TextFormField buildOldPasswordFormField() {
     return TextFormField(
       obscureText: true,
-      onSaved: (newValue) => password = newValue,
+      onSaved: (newValue) => old_password = newValue,
       onChanged: (value) {
         if (value.isNotEmpty) {
           removeError(error: kPassNullError);

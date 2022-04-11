@@ -19,12 +19,22 @@ class AuthService {
     return _auth.currentUser!.uid;
   }
 
+  String? get getUserEmail {
+    return _auth.currentUser!.email;
+  }
+
   // Sign in anon
   Future signInAnon() async {
     try {
       UserCredential result = await _auth.signInAnonymously();
       User? user = result.user;
       return _userFromFirebaseUser(user);
+    } on FirebaseAuthException catch (e) {
+      if (e.code == 'user-not-found') {
+        print('No user found for that email.');
+      } else if (e.code == 'wrong-password') {
+        print('Wrong password provided for that user.');
+      }
     } catch (e) {
       print(e.toString());
       return null;
@@ -64,6 +74,49 @@ class AuthService {
       // Create document for User Firestore Database
       await DatabaseService(uid: user!.uid).UpdateUserData("", "", "", "");
       return _userFromFirebaseUser(user);
+    } on FirebaseAuthException catch (e) {
+      if (e.code == 'weak-password') {
+        print('The password provided is too weak.');
+      } else if (e.code == 'email-already-in-use') {
+        print('The account already exists for that email.');
+      }
+    } catch (e) {
+      print(e.toString());
+      return null;
+    }
+  }
+
+  // Change Password
+  Future changePassword(
+      String email, String old_password, String new_password) async {
+    try {
+      UserCredential result = await _auth.signInWithEmailAndPassword(
+          email: email, password: old_password);
+      User? user = result.user;
+
+      if (user != null) {
+        await user.updatePassword(new_password);
+        return "Updated User Password";
+      } else {
+        return null;
+      }
+    } on FirebaseAuthException catch (e) {
+      if (e.code == 'weak-password') {
+        print('The password provided is too weak.');
+      } else if (e.code == 'email-already-in-use') {
+        print('The account already exists for that email.');
+      }
+    } catch (e) {
+      print(e.toString());
+      return null;
+    }
+  }
+
+  // Change Password
+  Future passwordResetEmail(String email) async {
+    try {
+      await FirebaseAuth.instance.sendPasswordResetEmail(email: email);
+      return "Password Reset Email Sent";
     } catch (e) {
       print(e.toString());
       return null;

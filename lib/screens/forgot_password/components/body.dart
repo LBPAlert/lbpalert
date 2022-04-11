@@ -1,10 +1,12 @@
 import 'package:flutter/material.dart';
+import 'package:lbpalert/helper/keyboard.dart';
+import 'package:lbpalert/screens/sign_in/sign_in_screen.dart';
+import 'package:lbpalert/services/auth.dart';
 import '/components/custom_surfix_icon.dart';
 import '/components/default_button.dart';
 import '/components/form_error.dart';
 import '/components/no_account_text.dart';
 import '/size_config.dart';
-
 import '../../../constants.dart';
 
 class Body extends StatelessWidget {
@@ -47,9 +49,11 @@ class ForgotPassForm extends StatefulWidget {
 }
 
 class _ForgotPassFormState extends State<ForgotPassForm> {
+  final AuthService _auth = AuthService();
   final _formKey = GlobalKey<FormState>();
   List<String> errors = [];
   String? email;
+  String error = "";
   @override
   Widget build(BuildContext context) {
     return Form(
@@ -99,9 +103,19 @@ class _ForgotPassFormState extends State<ForgotPassForm> {
           SizedBox(height: SizeConfig.screenHeight * 0.1),
           DefaultButton(
             text: "Continue",
-            press: () {
+            press: () async {
               if (_formKey.currentState!.validate()) {
-                // Do what you want to do
+                _formKey.currentState!.save();
+                dynamic result = await _auth.passwordResetEmail(email!);
+                if (result == null) {
+                  setState(() {
+                    error = "Please supply a valid email";
+                  });
+                } else {
+                  // if all are valid then go to success screen
+                  KeyboardUtil.hideKeyboard(context);
+                  Navigator.pushNamed(context, SignInScreen.routeName);
+                }
               }
             },
           ),
