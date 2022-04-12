@@ -35,10 +35,10 @@ class _AveragesState extends State<Averages> {
   @override
   Widget build(BuildContext context) {
     return Column(
-      children: [
+      children: <Widget>[
         Container(
           height: 50,
-          width: double.infinity,
+          //width: double.infinity,
           margin: EdgeInsets.only(
               top: getProportionateScreenWidth(5),
               bottom: getProportionateScreenWidth(5)),

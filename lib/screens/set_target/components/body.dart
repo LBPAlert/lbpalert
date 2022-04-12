@@ -17,13 +17,21 @@ class _BodyState extends State<Body> {
 
   void _incrementCounter() {
     setState(() {
-      _counter++;
+      if (_counter == 10) {
+        _counter = 10;
+      } else {
+        _counter++;
+      }
     });
   }
 
   void _decrementCounter() {
     setState(() {
-      _counter = _counter - 1;
+      if (_counter == 0) {
+        _counter = 0;
+      } else {
+        _counter = _counter - 1;
+      }
     });
   }
 
