@@ -24,7 +24,7 @@ class _ReadSensorDataState extends State<ReadSensorData> {
   void initState() {
     super.initState();
     activateListeners();
-    getPrediction();
+    // getPrediction();
   }
 
   void activateListeners() {
@@ -118,7 +118,7 @@ class _ReadSensorDataState extends State<ReadSensorData> {
                       style: TextStyle(color: Colors.white),
                       children: [
                         TextSpan(
-                          text: apiData + ' - ',
+                          text: sensorData + ' - ',
                           style: TextStyle(
                             fontSize: getProportionateScreenWidth(28),
                             fontWeight: FontWeight.bold,
@@ -133,11 +133,11 @@ class _ReadSensorDataState extends State<ReadSensorData> {
                       style: TextStyle(color: Colors.white),
                       children: [
                         TextSpan(
-                          text: predictiveText,
+                          text: 'prediction',
                           style: TextStyle(
                             fontSize: getProportionateScreenWidth(15),
                             fontWeight: FontWeight.normal,
-                            color: predictiveColor,
+                            color: Colors.white,
                           ),
                         ),
                       ],
@@ -162,7 +162,7 @@ class _ReadSensorDataState extends State<ReadSensorData> {
         Container(
           child: CircleAvatar(
             radius: getProportionateScreenWidth(85),
-            backgroundColor: predictiveColor,
+            backgroundColor: Colors.green,
           ),
         ),
       ]),

@@ -2,12 +2,10 @@ import 'package:firebase_database/firebase_database.dart';
 import 'package:lbpalert/screens/notifications/notifications_screen.dart';
 import 'package:lbpalert/screens/settings/settings_screen.dart';
 import 'package:lbpalert/screens/splash/splash_screen.dart';
-import 'package:lbpalert/screens/update_account/update_account_screen.dart';
 import 'package:lbpalert/services/auth.dart';
 import 'package:lbpalert/services/database.dart';
 import '../../../size_config.dart';
 import 'package:flutter/material.dart';
-
 import 'profile_menu.dart';
 import 'profile_pic.dart';
 
@@ -18,33 +16,41 @@ class Body extends StatefulWidget {
 
 class _BodyState extends State<Body> {
   final AuthService _auth = AuthService();
-  String user_name = "John Doe";
-  String user_email = "johndoe@yahooboys.com";
+  String? firstName;
+  String? lastName;
+  String? userEmail;
+  bool showFullName = false;
+  bool showEmail = false;
 
   @override
   void initState() {
     super.initState();
     getUserFullName();
+    updateEmail();
   }
 
-  String updateEmail() {
-    user_email = _auth.getUserEmail!;
-    return user_email;
+  void updateEmail() {
+    setState(() {
+      userEmail = _auth.getUserEmail!;
+    });
+    showEmail = true;
   }
 
-  void getUserFullName() {
+  void getUserFullName() async {
     final uid = _auth.getUserID;
     final DatabaseService _users = DatabaseService(uid: uid);
 
     DatabaseReference child = _users.getChild;
-    Stream<DatabaseEvent> dailyStream = child.onValue;
-
-    // Subscribe to the stream!
-    dailyStream.listen((DatabaseEvent event) {
+    final userData = await child.get();
+    if (userData.exists) {
       setState(() {
-        user_name = _users.getFullName(event);
+        firstName = (userData.value as dynamic)["firstname"];
+        lastName = (userData.value as dynamic)["lastname"];
       });
-    });
+      showFullName = true;
+    } else {
+      showFullName = false;
+    }
   }
 
   @override
@@ -55,7 +61,7 @@ class _BodyState extends State<Body> {
           ProfilePic(),
           SizedBox(height: 10),
           Text(
-            user_name,
+            showFullName ? firstName! + " " + lastName! : "John Doe",
             style: TextStyle(
               fontSize: getProportionateScreenWidth(25),
               fontWeight: FontWeight.bold,
@@ -63,7 +69,7 @@ class _BodyState extends State<Body> {
             ),
           ),
           Text(
-            user_email = updateEmail(),
+            showEmail ? userEmail! : "johndoe@yahooboys.com",
             style: TextStyle(
               fontSize: getProportionateScreenWidth(15),
               fontWeight: FontWeight.normal,
