@@ -10,7 +10,8 @@ class Greetings extends StatefulWidget {
 }
 
 class _GreetingsState extends State<Greetings> {
-  String name = 'there!';
+  String? name;
+  bool showName = false;
 
   final AuthService _auth = AuthService();
 
@@ -20,19 +21,20 @@ class _GreetingsState extends State<Greetings> {
     getUserFirstName();
   }
 
-  void getUserFirstName() {
+  void getUserFirstName() async {
     final uid = _auth.getUserID;
     final DatabaseService _users = DatabaseService(uid: uid);
 
     DatabaseReference child = _users.getChild;
-    Stream<DatabaseEvent> dailyStream = child.onValue;
-
-    // Subscribe to the stream!
-    dailyStream.listen((DatabaseEvent event) {
+    final userData = await child.get();
+    if (userData.exists) {
       setState(() {
-        name = _users.getFirstName(event);
+        name = (userData.value as dynamic)["firstname"];
       });
-    });
+      showName = true;
+    } else {
+      showName = false;
+    }
   }
 
   @override
@@ -41,7 +43,7 @@ class _GreetingsState extends State<Greetings> {
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
         Text(
-          "Hello " + name,
+          showName ? "Hello " + name! : "Hello there!",
           style: TextStyle(
             fontSize: getProportionateScreenWidth(18),
             fontWeight: FontWeight.normal,

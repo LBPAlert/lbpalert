@@ -23,7 +23,7 @@ class _ReadSensorDataState extends State<ReadSensorData> {
   void initState() {
     super.initState();
     activateListeners();
-    getPrediction();
+    // getPrediction();
   }
 
   void activateListeners() {
@@ -99,7 +99,7 @@ class _ReadSensorDataState extends State<ReadSensorData> {
                 style: TextStyle(color: Colors.white),
                 children: [
                   TextSpan(
-                    text: apiData,
+                    text: sensorData,
                     style: TextStyle(
                       fontSize: getProportionateScreenWidth(28),
                       fontWeight: FontWeight.bold,

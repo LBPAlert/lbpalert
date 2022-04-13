@@ -66,7 +66,7 @@ class _PasswordFormState extends State<PasswordForm> {
                 } else {
                   // if all are valid then go to success screen
                   KeyboardUtil.hideKeyboard(context);
-                  Navigator.pushNamed(context, SettingsScreen.routeName);
+                  Navigator.popAndPushNamed(context, SettingsScreen.routeName);
                 }
               }
             },
