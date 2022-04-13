@@ -72,7 +72,7 @@ class AuthService {
       User? user = result.user;
 
       // Create document for User Firestore Database
-      await DatabaseService(uid: user!.uid).UpdateUserData("", "", "", "");
+      await DatabaseService(uid: user!.uid).createUserData("", "", "", "", "");
       return _userFromFirebaseUser(user);
     } on FirebaseAuthException catch (e) {
       if (e.code == 'weak-password') {
