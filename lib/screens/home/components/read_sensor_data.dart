@@ -16,6 +16,7 @@ class _ReadSensorDataState extends State<ReadSensorData> {
   String sensorData = "0";
   String apiData = "0";
   Color predictiveColor = Colors.green;
+  String predictiveText = "No Strain";
 
   DatabaseReference ref = FirebaseDatabase.instance.ref('SWE_test(1)');
 
@@ -64,6 +65,18 @@ class _ReadSensorDataState extends State<ReadSensorData> {
     }
   }
 
+  void getPredictiveText(prediction) {
+    if (int.parse(prediction) >= 5 && int.parse(prediction) <= 8) {
+      setState(() {
+        predictiveText = 'More Strain';
+      });
+    } else if (int.parse(prediction) > 8) {
+      setState(() {
+        predictiveText = 'A lot of strain';
+      });
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Container(
@@ -94,19 +107,54 @@ class _ReadSensorDataState extends State<ReadSensorData> {
                 ),
               ),
             ),
-            Text.rich(
-              TextSpan(
-                style: TextStyle(color: Colors.white),
+            Container(
+              padding: EdgeInsets.symmetric(
+                horizontal: getProportionateScreenWidth(1),
+              ),
+              child: Row(
                 children: [
-                  TextSpan(
-                    text: sensorData,
-                    style: TextStyle(
-                      fontSize: getProportionateScreenWidth(28),
-                      fontWeight: FontWeight.bold,
-                      color: Colors.white,
+                  Text.rich(
+                    TextSpan(
+                      style: TextStyle(color: Colors.white),
+                      children: [
+                        TextSpan(
+                          text: sensorData + ' - ',
+                          style: TextStyle(
+                            fontSize: getProportionateScreenWidth(28),
+                            fontWeight: FontWeight.bold,
+                            color: Colors.white,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                  Text.rich(
+                    TextSpan(
+                      style: TextStyle(color: Colors.white),
+                      children: [
+                        TextSpan(
+                          text: 'prediction',
+                          style: TextStyle(
+                            fontSize: getProportionateScreenWidth(15),
+                            fontWeight: FontWeight.normal,
+                            color: Colors.white,
+                          ),
+                        ),
+                      ],
                     ),
                   ),
                 ],
+              ),
+            ),
+            SizedBox(height: getProportionateScreenHeight(30)),
+            Text.rich(
+              TextSpan(
+                text: 'Timestamp goes here',
+                style: TextStyle(
+                  fontSize: getProportionateScreenWidth(15),
+                  fontWeight: FontWeight.normal,
+                  color: kPrimaryColor,
+                ),
               ),
             ),
           ],
@@ -114,7 +162,7 @@ class _ReadSensorDataState extends State<ReadSensorData> {
         Container(
           child: CircleAvatar(
             radius: getProportionateScreenWidth(85),
-            backgroundColor: predictiveColor,
+            backgroundColor: Colors.green,
           ),
         ),
       ]),

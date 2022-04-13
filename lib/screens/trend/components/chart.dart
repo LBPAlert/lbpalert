@@ -21,6 +21,7 @@ class TrendsChart extends StatelessWidget {
     return new charts.TimeSeriesChart(
       seriesList,
       animate: animate,
+      defaultRenderer: new charts.BarRendererConfig<DateTime>(),
       dateTimeFactory: const charts.LocalDateTimeFactory(),
       domainAxis: charts.DateTimeAxisSpec(
         viewport: charts.DateTimeExtents(
@@ -36,7 +37,6 @@ class TrendsChart extends StatelessWidget {
       primaryMeasureAxis: new charts.NumericAxisSpec(
         viewport: charts.NumericExtents(0, 10),
       ),
-      defaultRenderer: new charts.LineRendererConfig(includePoints: true),
       behaviors: [
         // Add the sliding viewport behavior to have the viewport center on the
         // domain that is currently selected.

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:lbpalert/screens/change_password/change_password_screen.dart';
+import 'package:lbpalert/screens/pair_device/pair_device_screen.dart';
 import '../../../size_config.dart';
 import 'settings_menu.dart';
 import 'package:lbpalert/screens/set_target/set_target_screen.dart';
@@ -34,7 +35,9 @@ class Body extends StatelessWidget {
           SettingsMenu(
             text: "View Paired Device",
             icon: "assets/icons/device.svg",
-            press: () {},
+            press: () {
+              Navigator.pushNamed(context, PairDeviceScreen.routeName);
+            },
           ),
           SettingsMenu(
             text: "Set Target",

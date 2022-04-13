@@ -15,10 +15,7 @@ class Body extends StatefulWidget {
 class _BodyState extends State<Body> {
   int currentPage = 0;
   List<Map<String, String>> splashData = [
-    {
-      "text": "Welcome to LBPA, Take control of your lower back muscles now!",
-      "image": "assets/images/icon.png"
-    },
+    {"text": "Welcome to LBPA", "image": "assets/images/icon.png"},
     // {
     //   "text": ,
     //   "image":
@@ -54,13 +51,13 @@ class _BodyState extends State<Body> {
                 child: Column(
                   children: <Widget>[
                     Spacer(),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: List.generate(
-                        splashData.length,
-                        (index) => buildDot(index: index),
-                      ),
-                    ),
+                    // Row(
+                    //   mainAxisAlignment: MainAxisAlignment.center,
+                    //   children: List.generate(
+                    //     splashData.length,
+                    //     (index) => buildDot(index: index),
+                    //   ),
+                    // ),
                     Spacer(flex: 3),
                     DefaultButton(
                       text: "Continue",
