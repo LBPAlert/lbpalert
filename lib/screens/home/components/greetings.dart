@@ -43,7 +43,7 @@ class _GreetingsState extends State<Greetings> {
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
         Text(
-          showName ? "Hello " + name! : "Hello there!",
+          showName ? "Hello, " + name! + "!" : "Hello there!",
           style: TextStyle(
             fontSize: getProportionateScreenWidth(18),
             fontWeight: FontWeight.normal,
