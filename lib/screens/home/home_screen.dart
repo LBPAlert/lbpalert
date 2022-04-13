@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:lbpalert/screens/home/components/first_body.dart';
 import 'package:lbpalert/screens/profile/profile_screen.dart';
 import 'package:lbpalert/screens/trend/trend_screen.dart';
 import '/components/coustom_bottom_nav_bar.dart';
