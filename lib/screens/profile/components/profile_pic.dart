@@ -31,9 +31,9 @@ class _ProfilePicState extends State<ProfilePic> {
 
   void checkProfilePic() async {
     final uid = _auth.getUserID;
-    final DatabaseService _users = DatabaseService(uid: uid);
+    final UserDatabaseService _users = UserDatabaseService(uid: uid);
 
-    DatabaseReference child = _users.getChild;
+    DatabaseReference child = _users.getUser;
     final userData = await child.get();
     if (userData.exists) {
       setState(() {

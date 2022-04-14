@@ -2,63 +2,108 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:lbpalert/constants.dart';
 import 'package:lbpalert/services/api.dart';
+import 'package:lbpalert/services/auth.dart';
+import 'package:lbpalert/services/database.dart';
 import '../../../size_config.dart';
 import 'package:firebase_database/firebase_database.dart';
 //import 'package:vibration/vibration.dart';
 
-// might need to change to StaefulWidget
 class ReadSensorData extends StatefulWidget {
   @override
   _ReadSensorDataState createState() => _ReadSensorDataState();
 }
 
 class _ReadSensorDataState extends State<ReadSensorData> {
-  String sensorData = "0";
-  String apiData = "0";
-  Color predictiveColor = Colors.green;
-  String predictiveText = "No Strain";
+  String? apiData;
+  Color? predictiveColor;
+  String? predictiveText;
+  String? dateTimestamp;
+  bool showPrediction = false;
 
-  DatabaseReference ref = FirebaseDatabase.instance.ref('SWE_test(1)');
+  final AuthService _auth = AuthService();
 
   @override
   void initState() {
     super.initState();
     activateListeners();
-    // getPrediction();
+    // getAPIPrediction();
+    // getDatabasePrediction();
   }
 
   void activateListeners() {
-    DatabaseReference child = ref.child("raw_value");
-    Stream<DatabaseEvent> dailyStream = child.onValue;
+    final List<List<double>> sensorReadings = [];
+    late StreamSubscription sensorDataStreamSubscription;
 
-    // Subscribe to the stream!
-    dailyStream.listen((DatabaseEvent event) {
-      print('Database Value: ${event.snapshot.value}');
-      setState(() {
-        sensorData = '${event.snapshot.value}';
-      });
+    final DatabaseReference _sensorRef =
+        FirebaseDatabase.instance.ref("Sensor_Data");
+
+    Stream<DatabaseEvent> sensorDataStream = _sensorRef.onValue;
+
+    sensorDataStreamSubscription =
+        sensorDataStream.listen((DatabaseEvent event) async {
+      final sensor00 =
+          (event.snapshot.value as dynamic)["sEMG00"]["voltage_Level"];
+      final sensor01 =
+          (event.snapshot.value as dynamic)["sEMG01"]["voltage_Level"];
+      final sensor10 =
+          (event.snapshot.value as dynamic)["sEMG10"]["voltage_Level"];
+      final sensor11 =
+          (event.snapshot.value as dynamic)["sEMG11"]["voltage_Level"];
+
+      sensorReadings.add([sensor00, sensor01, sensor10, sensor11]);
+
+      print(sensorReadings.length);
+
+      if (sensorReadings.length == 500) {
+        sensorDataStreamSubscription.pause();
+        final json = sensorReadings.toString();
+        await makePostRequest(json).then(
+          (prediction) {
+            setState(() {
+              apiData = prediction;
+            });
+            showPrediction = true;
+            getPredictiveColor(prediction);
+            getPredictiveText(prediction);
+            getTimestamp();
+            sensorReadings.removeAt(0);
+          },
+        );
+        sensorDataStreamSubscription.resume();
+      }
     });
-
-    //   if (int.parse(sensorData) >= 8) {
-    //     Vibration.vibrate(duration: 2000);
-    //   }
   }
 
-  void getPrediction() async {
-    makePostRequest().then((prediction) {
-      setState(() {
-        apiData = prediction;
-      });
-      getPredictiveColor(prediction);
+  void getAPIPrediction() {
+    final uid = _auth.getUserID;
+    final PredictionDatabaseService _prediction =
+        PredictionDatabaseService(uid: uid);
+    _prediction.getMLPredictions();
+  }
+
+  void getDatabasePrediction() {
+    final uid = _auth.getUserID;
+    final UserDatabaseService _users = UserDatabaseService(uid: uid);
+
+    DatabaseReference user = _users.getUser;
+
+    DatabaseReference prediction = user.child("prediction");
+
+    prediction.onChildAdded.listen((event) {
+      print(event.snapshot.value);
     });
   }
 
   void getPredictiveColor(prediction) {
-    if (int.parse(prediction) >= 5 && int.parse(prediction) <= 8) {
+    if (int.parse(prediction) >= 0 && int.parse(prediction) <= 5) {
+      setState(() {
+        predictiveColor = Colors.green;
+      });
+    } else if (int.parse(prediction) > 5 && int.parse(prediction) <= 8) {
       setState(() {
         predictiveColor = Colors.orange;
       });
-    } else if (int.parse(prediction) > 8) {
+    } else {
       setState(() {
         predictiveColor = Colors.red;
       });
@@ -66,15 +111,33 @@ class _ReadSensorDataState extends State<ReadSensorData> {
   }
 
   void getPredictiveText(prediction) {
-    if (int.parse(prediction) >= 5 && int.parse(prediction) <= 8) {
+    if (int.parse(prediction) >= 0 && int.parse(prediction) <= 5) {
       setState(() {
-        predictiveText = 'More Strain';
+        predictiveText = "No strain";
       });
-    } else if (int.parse(prediction) > 8) {
+    } else if (int.parse(prediction) > 5 && int.parse(prediction) <= 8) {
       setState(() {
-        predictiveText = 'A lot of strain';
+        predictiveText = "More strain";
+      });
+    } else {
+      setState(() {
+        predictiveText = "WARNING";
       });
     }
+  }
+
+  void getTimestamp() {
+    final List<String> timestamp = DateTime.now().toString().split(" ");
+
+    final List<String> dateStamp = timestamp[0].split("-");
+    final List<String> timeStamp = timestamp[1].split(":");
+
+    final String date = dateStamp[1] + "/" + dateStamp[2] + "/" + dateStamp[0];
+    final String time = timeStamp[0] + ":" + timeStamp[1];
+
+    setState(() {
+      dateTimestamp = date + " " + time;
+    });
   }
 
   @override
@@ -118,11 +181,11 @@ class _ReadSensorDataState extends State<ReadSensorData> {
                       style: TextStyle(color: Colors.white),
                       children: [
                         TextSpan(
-                          text: sensorData + ' - ',
+                          text: showPrediction ? apiData! + " : " : "",
                           style: TextStyle(
-                            fontSize: getProportionateScreenWidth(28),
+                            fontSize: getProportionateScreenWidth(20),
                             fontWeight: FontWeight.bold,
-                            color: Colors.white,
+                            color: predictiveColor,
                           ),
                         ),
                       ],
@@ -133,11 +196,12 @@ class _ReadSensorDataState extends State<ReadSensorData> {
                       style: TextStyle(color: Colors.white),
                       children: [
                         TextSpan(
-                          text: 'prediction',
+                          text: showPrediction ? predictiveText : "No activity",
                           style: TextStyle(
-                            fontSize: getProportionateScreenWidth(15),
+                            fontSize: getProportionateScreenWidth(20),
                             fontWeight: FontWeight.normal,
-                            color: Colors.white,
+                            color:
+                                showPrediction ? predictiveColor : Colors.grey,
                           ),
                         ),
                       ],
@@ -149,7 +213,7 @@ class _ReadSensorDataState extends State<ReadSensorData> {
             SizedBox(height: getProportionateScreenHeight(30)),
             Text.rich(
               TextSpan(
-                text: 'Timestamp goes here',
+                text: showPrediction ? dateTimestamp : "",
                 style: TextStyle(
                   fontSize: getProportionateScreenWidth(15),
                   fontWeight: FontWeight.normal,
@@ -162,7 +226,7 @@ class _ReadSensorDataState extends State<ReadSensorData> {
         Container(
           child: CircleAvatar(
             radius: getProportionateScreenWidth(85),
-            backgroundColor: Colors.green,
+            backgroundColor: showPrediction ? predictiveColor : Colors.grey,
           ),
         ),
       ]),
