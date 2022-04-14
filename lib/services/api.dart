@@ -1,12 +1,9 @@
 import 'package:http/http.dart' as http;
+import "dart:math";
 
-Future<String> makePostRequest() async {
+Future<String> makePostRequest(json) async {
   const url = "http://ec2-18-234-82-111.compute-1.amazonaws.com:80/predict";
-
   final headers = {"Content-type": "application/json"};
-
-  const json =
-      '[14.15096801, 5396.33385026,  90, 100.85063639, 4210.27282935,   950, 90.247584,   34090.35022757,  1290, 90.1312418,  34940.14757631,  1009]';
 
   final response =
       await http.post(Uri.parse(url), headers: headers, body: json);
@@ -16,9 +13,16 @@ Future<String> makePostRequest() async {
     prediction = prediction.replaceAll("]", "");
 
     List<String> predictionList = prediction.split(' ');
+    predictionList.remove("");
+    predictionList.remove("");
+
+    List<double> predictionListDouble =
+        predictionList.map(double.parse).toList();
+
+    var maxPrediction = predictionListDouble.reduce(max);
 
     final predictedValue =
-        predictionList.indexWhere((element) => element == "1.");
+        predictionListDouble.indexWhere((element) => element == maxPrediction);
 
     print("Prediction: $predictedValue");
 

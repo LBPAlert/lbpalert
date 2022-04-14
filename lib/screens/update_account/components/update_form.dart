@@ -61,7 +61,7 @@ class _UpdateFormState extends State<UpdateForm> {
               if (_formKey.currentState!.validate()) {
                 _formKey.currentState!.save();
                 final user_id = _auth.getUserID;
-                await DatabaseService(uid: user_id).updateUserData(
+                await UserDatabaseService(uid: user_id).updateUserData(
                     firstName!, lastName!, phoneNumber!, address!);
                 KeyboardUtil.hideKeyboard(context);
                 Navigator.pushNamed(context, HomeScreen.routeName);
