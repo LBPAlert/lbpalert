@@ -1,6 +1,5 @@
 import 'package:lbpalert/helper/keyboard.dart';
 import 'package:lbpalert/screens/home/home_screen.dart';
-import 'package:lbpalert/screens/login_success/login_success_screen.dart';
 import 'package:lbpalert/services/database.dart';
 import 'package:flutter/material.dart';
 import '/components/custom_surfix_icon.dart';
@@ -60,7 +59,12 @@ class _CompleteProfileFormState extends State<CompleteProfileForm> {
               if (_formKey.currentState!.validate()) {
                 // Navigator.pushNamed(context, OtpScreen.routeName); DO WE NEED?
                 await UserDatabaseService(uid: user_id).createUserData(
-                    firstName!, lastName!, phoneNumber!, address!, "");
+                    firstName!,
+                    lastName!,
+                    phoneNumber!,
+                    address!,
+                    "",
+                    defaultPainRating);
                 KeyboardUtil.hideKeyboard(context);
                 Navigator.pushNamed(context, HomeScreen.routeName);
               }

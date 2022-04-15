@@ -1,3 +1,4 @@
+import 'package:lbpalert/constants.dart';
 import 'package:lbpalert/models/user.dart';
 import 'package:lbpalert/services/database.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -73,7 +74,7 @@ class AuthService {
 
       // Create document for User Firestore Database
       await UserDatabaseService(uid: user!.uid)
-          .createUserData("", "", "", "", "");
+          .createUserData("", "", "", "", "", defaultPainRating);
       return _userFromFirebaseUser(user);
     } on FirebaseAuthException catch (e) {
       if (e.code == 'weak-password') {

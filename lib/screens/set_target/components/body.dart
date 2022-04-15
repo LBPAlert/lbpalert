@@ -1,9 +1,9 @@
+import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
-import 'package:lbpalert/screens/settings/components/body.dart';
-import '/components/coustom_bottom_nav_bar.dart';
-import '/enums.dart';
+import 'package:lbpalert/screens/home/home_screen.dart';
+import 'package:lbpalert/services/auth.dart';
+import 'package:lbpalert/services/database.dart';
 import '/components/default_button.dart';
-import 'package:lbpalert/screens/settings/settings_screen.dart';
 import '../../../size_config.dart';
 import '../../../constants.dart';
 
@@ -13,24 +13,44 @@ class Body extends StatefulWidget {
 }
 
 class _BodyState extends State<Body> {
-  int _counter = 8;
+  final AuthService _auth = AuthService();
+  int? painTarget;
+
+  @override
+  void initState() {
+    super.initState();
+    getUserTarget();
+  }
+
+  void getUserTarget() async {
+    final uid = _auth.getUserID;
+    final UserDatabaseService _users = UserDatabaseService(uid: uid);
+
+    DatabaseReference child = _users.getUser;
+    final userData = await child.get();
+    if (userData.exists) {
+      setState(() {
+        painTarget = (userData.value as dynamic)["pain_target"];
+      });
+    }
+  }
 
   void _incrementCounter() {
     setState(() {
-      if (_counter == 10) {
-        _counter = 10;
+      if (painTarget == maxPainRating) {
+        painTarget = maxPainRating;
       } else {
-        _counter++;
+        painTarget = (painTarget! + 1);
       }
     });
   }
 
   void _decrementCounter() {
     setState(() {
-      if (_counter == 0) {
-        _counter = 0;
+      if (painTarget == minPainRating) {
+        painTarget = minPainRating;
       } else {
-        _counter = _counter - 1;
+        painTarget = (painTarget! - 1);
       }
     });
   }
@@ -55,7 +75,7 @@ class _BodyState extends State<Body> {
             ),
             SizedBox(width: 50),
             Text(
-              '$_counter',
+              '$painTarget',
               style: TextStyle(
                 color: Colors.white,
                 fontSize: getProportionateScreenWidth(28),
@@ -77,8 +97,11 @@ class _BodyState extends State<Body> {
           width: 100,
           child: DefaultButton(
             text: "Save",
-            press: () {
-              Navigator.pop(context);
+            press: () async {
+              final user_id = _auth.getUserID;
+              await UserDatabaseService(uid: user_id)
+                  .updatePainTarget(painTarget!);
+              Navigator.pushNamed(context, HomeScreen.routeName);
             },
           ),
         ),

@@ -10,7 +10,7 @@ class UserDatabaseService {
   final DatabaseReference _users = FirebaseDatabase.instance.ref("users");
 
   Future createUserData(String firstname, String lastname, String phoneNum,
-      String address, String profilePic) async {
+      String address, String profilePic, int painTarget) async {
     return await _users
         .child(uid)
         .set({
@@ -19,6 +19,7 @@ class UserDatabaseService {
           'phone_number': phoneNum,
           "address": address,
           "profile_pic": profilePic,
+          "pain_target": painTarget,
         })
         .then((value) => print("User Added"))
         .catchError((error) => print("Failed to add user: $error"));
@@ -48,6 +49,16 @@ class UserDatabaseService {
         .catchError((error) => print("Failed to update profile Pic: $error"));
   }
 
+  Future updatePainTarget(int painTarget) async {
+    return await _users
+        .child(uid)
+        .update({
+          'pain_target': painTarget,
+        })
+        .then((value) => print("Pain Target Updated"))
+        .catchError((error) => print("Failed to update pain target: $error"));
+  }
+
   // get streams
   FirebaseUserData _userDataFromSnapshot(DatabaseEvent event) {
     return FirebaseUserData(
@@ -56,7 +67,8 @@ class UserDatabaseService {
         lastname: (event.snapshot.value as dynamic)['lastname'],
         phoneNumber: (event.snapshot.value as dynamic)['phone_number'],
         address: (event.snapshot.value as dynamic)['address'],
-        profilePic: (event.snapshot.value as dynamic)['profile_pic']);
+        profilePic: (event.snapshot.value as dynamic)['profile_pic'],
+        painTarget: (event.snapshot.value as dynamic)['pain_target']);
   }
 
   Stream<FirebaseUserData> get userData {
@@ -65,30 +77,6 @@ class UserDatabaseService {
 
   DatabaseReference get getUser {
     return _users.child(uid);
-  }
-
-  String getFirstName(DatabaseEvent event) {
-    return '${(event.snapshot.value as dynamic)['firstname']}!';
-  }
-
-  String getLastName(DatabaseEvent event) {
-    return '${(event.snapshot.value as dynamic)['lastname']}';
-  }
-
-  String getFullName(DatabaseEvent event) {
-    return '${(event.snapshot.value as dynamic)['firstname']} ${(event.snapshot.value as dynamic)['lastname']}';
-  }
-
-  String getPhoneNum(DatabaseEvent event) {
-    return '${(event.snapshot.value as dynamic)['phone_number']}';
-  }
-
-  String getAddress(DatabaseEvent event) {
-    return '${(event.snapshot.value as dynamic)['address']}';
-  }
-
-  String getPic(DatabaseEvent event) {
-    return '${(event.snapshot.value as dynamic)['profile_pic']}';
   }
 }
 

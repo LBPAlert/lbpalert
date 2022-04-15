@@ -39,9 +39,9 @@ class _ProfilePicState extends State<ProfilePic> {
       setState(() {
         imageURL = (userData.value as dynamic)["profile_pic"];
       });
-      showProfilePic = true;
-    } else {
-      showProfilePic = false;
+      if (imageURL != "") {
+        showProfilePic = true;
+      }
     }
   }
 
