@@ -15,11 +15,27 @@ class Body extends StatefulWidget {
 class _BodyState extends State<Body> {
   final AuthService _auth = AuthService();
   int? painTarget;
+  bool greyOutMax = false;
+  bool greyOutMin = false;
 
   @override
   void initState() {
     super.initState();
     getUserTarget();
+  }
+
+  // greys out the add and subtract buttons when the limits have been reached
+  void activateListeners() {
+    if (painTarget == maxPainRating) {
+      greyOutMax = true;
+    } else {
+      greyOutMax = false;
+    }
+    if (painTarget == minPainRating) {
+      greyOutMin = true;
+    } else {
+      greyOutMin = false;
+    }
   }
 
   void getUserTarget() async {
@@ -42,6 +58,7 @@ class _BodyState extends State<Body> {
       } else {
         painTarget = (painTarget! + 1);
       }
+      activateListeners();
     });
   }
 
@@ -52,22 +69,26 @@ class _BodyState extends State<Body> {
       } else {
         painTarget = (painTarget! - 1);
       }
+      activateListeners();
     });
   }
 
   @override
   Widget build(BuildContext context) {
     return Column(
-      mainAxisAlignment: MainAxisAlignment.center,
+      crossAxisAlignment: CrossAxisAlignment.center,
       children: <Widget>[
+        SizedBox(height: getProportionateScreenHeight(50)),
         const Text(
-            'Set your target to determine what value to be notified about injury risk. This can be changed anytime.'),
-        SizedBox(height: getProportionateScreenHeight(200)),
+          'Set your target to determine when to be notified about injury risk. This can be changed anytime.',
+          style: TextStyle(color: Colors.white),
+        ),
+        SizedBox(height: getProportionateScreenHeight(150)),
         Row(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             FloatingActionButton(
-              backgroundColor: kPrimaryColor,
+              backgroundColor: greyOutMin ? Colors.grey : kPrimaryColor,
               splashColor: kSecondaryColor,
               onPressed: _decrementCounter,
               tooltip: 'Decrement',
@@ -84,7 +105,7 @@ class _BodyState extends State<Body> {
             ),
             SizedBox(width: 50),
             FloatingActionButton(
-              backgroundColor: kPrimaryColor,
+              backgroundColor: greyOutMax ? Colors.grey : kPrimaryColor,
               splashColor: kSecondaryColor,
               onPressed: _incrementCounter,
               tooltip: 'Increment',
