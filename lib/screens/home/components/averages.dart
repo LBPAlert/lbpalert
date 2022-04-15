@@ -12,6 +12,14 @@ class Averages extends StatefulWidget {
 class _AveragesState extends State<Averages> {
   String sensorData = "Insert Data Here";
 
+  Map<String, int> items = {
+    'Mon': 3,
+    'Thurs': 4,
+    'Sat': 6,
+    'Wed': 7,
+    'Sun': 10
+  };
+
   DatabaseReference ref = FirebaseDatabase.instance.ref('SWE_test(1)');
 
   @override
@@ -34,93 +42,40 @@ class _AveragesState extends State<Averages> {
 
   @override
   Widget build(BuildContext context) {
-    return Column(
-      children: <Widget>[
-        Container(
-          height: 50,
-          //width: double.infinity,
-          margin: EdgeInsets.only(
-              top: getProportionateScreenWidth(5),
-              bottom: getProportionateScreenWidth(5)),
-          decoration: BoxDecoration(
-            color: Color.fromARGB(255, 63, 62, 62),
-            borderRadius: BorderRadius.circular(20),
-          ),
-          child: ListTile(
-            leading: Icon(
-              Icons.nordic_walking,
-              color: kPrimaryColor,
-            ),
-            title: Text(
-              "Daily Average",
-              style: TextStyle(color: kPrimaryColor),
-            ),
-            trailing: Text(
-              sensorData,
-              style: TextStyle(
-                color: Colors.white,
-                fontSize: 22,
+    var trendList = items.entries.toList();
+
+    return Container(
+      height: 180,
+      child: ListView.builder(
+          shrinkWrap: true,
+          physics: AlwaysScrollableScrollPhysics(),
+          itemCount: items.length,
+          itemBuilder: (context, index) {
+            return Container(
+              margin: EdgeInsets.only(
+                  top: getProportionateScreenWidth(5),
+                  bottom: getProportionateScreenWidth(5)),
+              decoration: BoxDecoration(
+                color: Color.fromARGB(255, 63, 62, 62),
+                borderRadius: BorderRadius.circular(20),
               ),
-            ),
-          ),
-        ),
-        Container(
-          height: 50,
-          width: double.infinity,
-          margin: EdgeInsets.only(
-              top: getProportionateScreenWidth(5),
-              bottom: getProportionateScreenWidth(5)),
-          decoration: BoxDecoration(
-            color: Color.fromARGB(255, 63, 62, 62),
-            borderRadius: BorderRadius.circular(20),
-          ),
-          child: ListTile(
-            leading: Icon(
-              Icons.nordic_walking,
-              color: kPrimaryColor,
-            ),
-            title: Text(
-              "Weekly Average",
-              style: TextStyle(color: kPrimaryColor),
-            ),
-            trailing: Text(
-              sensorData,
-              style: TextStyle(
-                color: Colors.white,
-                fontSize: 22,
+              child: ListTile(
+                leading: Icon(
+                  Icons.scale,
+                  color: kPrimaryColor,
+                ),
+                title: Text(
+                  trendList[index].key,
+                  style: TextStyle(color: Colors.white, fontSize: 22),
+                ),
+                trailing: Text(items[trendList[index].key].toString(),
+                    style: TextStyle(
+                      color: Colors.white,
+                      fontSize: 22,
+                    )),
               ),
-            ),
-          ),
-        ),
-        Container(
-          height: 50,
-          width: double.infinity,
-          margin: EdgeInsets.only(
-              top: getProportionateScreenWidth(5),
-              bottom: getProportionateScreenWidth(5)),
-          decoration: BoxDecoration(
-            color: Color.fromARGB(255, 63, 62, 62),
-            borderRadius: BorderRadius.circular(20),
-          ),
-          child: ListTile(
-            leading: Icon(
-              Icons.nordic_walking,
-              color: kPrimaryColor,
-            ),
-            title: Text(
-              "Monthly Average",
-              style: TextStyle(color: kPrimaryColor),
-            ),
-            trailing: Text(
-              sensorData,
-              style: TextStyle(
-                color: Colors.white,
-                fontSize: 22,
-              ),
-            ),
-          ),
-        ),
-      ],
+            );
+          }),
     );
   }
 }
