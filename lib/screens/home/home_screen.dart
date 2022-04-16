@@ -22,7 +22,7 @@ class _HomeScreenState extends State<HomeScreen> {
   List pages = [Body(), TrendScreen(), ProfileScreen()];
 
   int currentIndex = 0;
-  List titleText = ["Home", "Summary", "Profile"];
+  List titleText = ["Home", "Trends", "Profile"];
 
   void onTap(int index) {
     setState(() {

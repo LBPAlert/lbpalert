@@ -19,7 +19,8 @@ class TrendScreen extends StatelessWidget {
         //   style: TextStyle(color: Colors.white),
         // ),
       ),
-      body: TrendsChart.withSampleData(), //Body(),
+      //body: TrendsChart.withSampleData(),
+      body: Body(),
       //bottomNavigationBar: CustomBottomNavBar(selectedMenu: MenuState.trend),
     );
   }

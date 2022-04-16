@@ -1,5 +1,6 @@
 import 'package:charts_flutter/flutter.dart' as charts;
 import 'package:flutter/material.dart';
+import 'package:lbpalert/constants.dart';
 
 class TrendsChart extends StatelessWidget {
   final List<charts.Series<dynamic, DateTime>> seriesList;
@@ -24,6 +25,9 @@ class TrendsChart extends StatelessWidget {
       defaultRenderer: new charts.BarRendererConfig<DateTime>(),
       dateTimeFactory: const charts.LocalDateTimeFactory(),
       domainAxis: charts.DateTimeAxisSpec(
+        renderSpec: new charts.SmallTickRendererSpec(
+            labelStyle:
+                new charts.TextStyleSpec(color: charts.MaterialPalette.white)),
         viewport: charts.DateTimeExtents(
             start: DateTime.now().subtract(Duration(days: 4)),
             end: DateTime.now()),
@@ -35,8 +39,10 @@ class TrendsChart extends StatelessWidget {
         ),
       ),
       primaryMeasureAxis: new charts.NumericAxisSpec(
-        viewport: charts.NumericExtents(0, 10),
-      ),
+          viewport: charts.NumericExtents(0, 10),
+          renderSpec: new charts.GridlineRendererSpec(
+              labelStyle: new charts.TextStyleSpec(
+                  color: charts.MaterialPalette.white))),
       behaviors: [
         // Add the sliding viewport behavior to have the viewport center on the
         // domain that is currently selected.
@@ -52,22 +58,22 @@ class TrendsChart extends StatelessWidget {
   /// Create one series with sample hard coded data.
   static List<charts.Series<BackData, DateTime>> _createSampleData() {
     final data = [
-      new BackData(DateTime(2019, 1, 7), 5),
-      new BackData(DateTime(2019, 1, 8), 3),
-      new BackData(DateTime(2019, 1, 9), 6),
-      new BackData(DateTime(2019, 1, 10), 7),
-      new BackData(DateTime(2019, 1, 11), 5),
-      new BackData(DateTime(2019, 1, 12), 2),
-      new BackData(DateTime(2019, 1, 13), 10),
-      new BackData(DateTime(2019, 1, 14), 7),
-      new BackData(DateTime(2019, 1, 15), 8),
-      new BackData(DateTime(2019, 1, 16), 6),
+      new BackData(DateTime.now().subtract(Duration(days: 9)), 5),
+      new BackData(DateTime.now().subtract(Duration(days: 8)), 3),
+      new BackData(DateTime.now().subtract(Duration(days: 7)), 6),
+      new BackData(DateTime.now().subtract(Duration(days: 6)), 7),
+      new BackData(DateTime.now().subtract(Duration(days: 5)), 5),
+      new BackData(DateTime.now().subtract(Duration(days: 4)), 2),
+      new BackData(DateTime.now().subtract(Duration(days: 3)), 10),
+      new BackData(DateTime.now().subtract(Duration(days: 2)), 7),
+      new BackData(DateTime.now().subtract(Duration(days: 1)), 8),
+      new BackData(DateTime.now(), 6),
     ];
 
     return [
       new charts.Series<BackData, DateTime>(
         id: '',
-        colorFn: (_, __) => charts.MaterialPalette.blue.shadeDefault,
+        colorFn: (_, __) => charts.MaterialPalette.deepOrange.shadeDefault,
         domainFn: (BackData back, _) => back.day,
         measureFn: (BackData back, _) => back.backData,
         data: data,
