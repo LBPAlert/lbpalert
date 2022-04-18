@@ -6,7 +6,7 @@ import 'package:lbpalert/services/auth.dart';
 import 'package:lbpalert/services/database.dart';
 import '../../../size_config.dart';
 import 'package:firebase_database/firebase_database.dart';
-//import 'package:vibration/vibration.dart';
+import 'package:lbpalert/models/notif_item.dart';
 
 class ReadSensorData extends StatefulWidget {
   @override
@@ -19,6 +19,8 @@ class _ReadSensorDataState extends State<ReadSensorData> {
   String? predictiveText;
   String? dateTimestamp;
   bool showPrediction = false;
+  Color? currentColor = Colors.grey;
+  bool isChanged = false;
 
   final AuthService _auth = AuthService();
 
@@ -138,6 +140,44 @@ class _ReadSensorDataState extends State<ReadSensorData> {
     setState(() {
       dateTimestamp = date + " " + time;
     });
+  }
+
+  void checkForChange() {
+    if (currentColor != predictiveColor) {
+      currentColor = predictiveColor;
+      isChanged = true;
+    } else {
+      currentColor = predictiveColor;
+      isChanged = false;
+    }
+  }
+
+  void updateNotifications() {
+    if (isChanged == true && predictiveColor == Colors.green) {
+      notifications.insert(
+          0,
+          Item(
+            color: Colors.green,
+            title: "Green Alert",
+            description: "You are in a safe zone",
+          ));
+    } else if (isChanged == true && predictiveColor == Colors.orange) {
+      notifications.insert(
+          0,
+          Item(
+            color: Colors.orange,
+            title: "Orange Alert",
+            description: "Might want to relax soon",
+          ));
+    } else if (isChanged == true && predictiveColor == Colors.red) {
+      notifications.insert(
+          0,
+          Item(
+            color: Colors.red,
+            title: "Red Alert",
+            description: "Warning! You are at risk of lower back pain",
+          ));
+    }
   }
 
   @override

@@ -13,20 +13,10 @@ class Item {
 
 // Demo notifications list
 
-List<Item> demoItems = [
+List<Item> notifications = [
   Item(
-    color: Colors.orange,
-    title: "Orange Alert",
-    description: "Might want to relax soon",
-  ),
-  Item(
-    color: Colors.green,
-    title: "Green Alert",
-    description: "You are back in your safe spot",
-  ),
-  Item(
-    color: Colors.red,
-    title: "Red Alert",
-    description: "Warning! You are at risk",
+    color: Colors.grey,
+    title: "Welcome to LBPAlert!",
+    description: "You will receive notifications here",
   ),
 ];

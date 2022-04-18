@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:lbpalert/models/notif_item.dart';
-import 'package:lbpalert/models/notifications.dart';
 import '../../../constants.dart';
 import '../../../size_config.dart';
 
@@ -10,7 +9,7 @@ class NotifCard extends StatelessWidget {
     required this.notification,
   }) : super(key: key);
 
-  final Notif notification;
+  final Item notification;
 
   @override
   Widget build(BuildContext context) {
@@ -28,7 +27,7 @@ class NotifCard extends StatelessWidget {
               ),
               child: CircleAvatar(
                 radius: getProportionateScreenWidth(85),
-                backgroundColor: notification.item.color,
+                backgroundColor: notification.color,
               ),
             ),
           ),
@@ -38,7 +37,7 @@ class NotifCard extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text(
-              notification.item.title,
+              notification.title,
               style: TextStyle(
                   color: Colors.white,
                   fontSize: 16,
@@ -48,7 +47,7 @@ class NotifCard extends StatelessWidget {
             SizedBox(height: 10),
             Text.rich(
               TextSpan(
-                text: notification.item.description,
+                text: notification.description,
                 style: TextStyle(
                     fontWeight: FontWeight.w600, color: kPrimaryColor),
               ),

@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
-import 'package:lbpalert/models/notifications.dart';
-
+import 'package:lbpalert/models/notif_item.dart';
+import '../../../constants.dart';
 import '../../../size_config.dart';
 import 'notif_card.dart';
 
@@ -15,12 +15,14 @@ class _BodyState extends State<Body> {
   Widget build(BuildContext context) {
     return Padding(
       padding:
-          EdgeInsets.symmetric(horizontal: getProportionateScreenWidth(20)),
+          EdgeInsets.symmetric(horizontal: getProportionateScreenWidth(10)),
       child: ListView.builder(
-        itemCount: demoNotifs.length,
+        itemCount: notifications.length,
         itemBuilder: (context, index) => Padding(
           padding: EdgeInsets.symmetric(vertical: 10),
-          child: NotifCard(notification: demoNotifs[index]),
+          child: NotifCard(
+            notification: notifications[index],
+          ),
         ),
       ),
     );
