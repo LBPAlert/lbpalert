@@ -1,12 +1,14 @@
 import 'dart:async';
+import 'dart:convert';
+import 'dart:math';
 import 'package:flutter/material.dart';
 import 'package:lbpalert/constants.dart';
 import 'package:lbpalert/services/api.dart';
 import 'package:lbpalert/services/auth.dart';
-import 'package:lbpalert/services/database.dart';
 import '../../../size_config.dart';
 import 'package:firebase_database/firebase_database.dart';
 import 'package:lbpalert/models/notif_item.dart';
+import 'package:lbpalert/screens/home/components/section_title.dart';
 
 class ReadSensorData extends StatefulWidget {
   @override
@@ -15,21 +17,114 @@ class ReadSensorData extends StatefulWidget {
 
 class _ReadSensorDataState extends State<ReadSensorData> {
   String? apiData;
-  Color? predictiveColor;
   String? predictiveText;
   String? dateTimestamp;
+  String? today;
   bool showPrediction = false;
-  Color? currentColor = Colors.grey;
+  bool hasPastPredictions = false;
   bool isChanged = false;
-
-  final AuthService _auth = AuthService();
+  Color? currentColor = Colors.grey;
+  Color? predictiveColor;
+  int cnt = 0;
+  int total = 0;
+  int numChildren = 0;
+  Map<String, dynamic> predictionItems = {};
+  Map<String, int> items = {
+    'Mon': 3,
+    'Thurs': 4,
+    'Sat': 6,
+    'Wed': 7,
+    'Sun': 10
+  };
 
   @override
   void initState() {
     super.initState();
-    activateListeners();
-    // getAPIPrediction();
-    // getDatabasePrediction();
+    // activateListeners();
+    randomIntegerGenerator();
+  }
+
+  void randomIntegerGenerator() async {
+    var rng = Random();
+    for (var i = 0; i < 50; i++) {
+      if (i < 10) {
+        setState(() {
+          apiData = rng.nextInt(11).toString();
+          today = "04-24-2022";
+        });
+      } else if (i >= 10 && i < 20) {
+        setState(() {
+          apiData = rng.nextInt(11).toString();
+          today = "04-25-2022";
+        });
+      } else if (i >= 20 && i < 30) {
+        setState(() {
+          apiData = rng.nextInt(11).toString();
+          today = "04-26-2022";
+        });
+      } else if (i >= 30 && i < 40) {
+        setState(() {
+          apiData = rng.nextInt(11).toString();
+          today = "04-27-2022";
+        });
+      } else if (i >= 40 && i < 50) {
+        setState(() {
+          apiData = rng.nextInt(11).toString();
+          today = "04-28-2022";
+        });
+      }
+      showPrediction = true;
+      getTimestamp();
+      calculateDailyAverage(apiData);
+      getPredictiveColor(apiData);
+      getPredictiveText(apiData);
+      checkForChange();
+      updateNotifications();
+      await Future.delayed(Duration(seconds: 5));
+    }
+  }
+
+  void calculateDailyAverage(prediction) async {
+    int value = int.parse(prediction);
+
+    final AuthService _auth = AuthService();
+    final uid = _auth.getUserID;
+    final DatabaseReference _aveRef =
+        FirebaseDatabase.instance.ref("users/$uid/daily_averages");
+
+    final _aveSnap = await _aveRef.child(today!).get();
+
+    if (_aveSnap.exists) {
+      cnt += 1;
+      total += value;
+      _aveRef.update({
+        today!: (total / cnt).floor(),
+      });
+    } else {
+      cnt = 1;
+      numChildren += 1;
+      total = value;
+      if (numChildren != 1) {
+        hasPastPredictions = true;
+        getPastPredictions();
+      }
+      _aveRef.update({
+        today!: value,
+      });
+    }
+  }
+
+  void getPastPredictions() async {
+    final AuthService _auth = AuthService();
+    final uid = _auth.getUserID;
+    final DatabaseReference _aveRef =
+        FirebaseDatabase.instance.ref("users/$uid/daily_averages");
+
+    final _aveRefSnap = await _aveRef.get();
+
+    if (_aveRefSnap.exists) {
+      predictionItems = jsonDecode(jsonEncode(_aveRefSnap.value));
+    }
   }
 
   void activateListeners() {
@@ -60,39 +155,22 @@ class _ReadSensorDataState extends State<ReadSensorData> {
         sensorDataStreamSubscription.pause();
         final json = sensorReadings.toString();
         await makePostRequest(json).then(
-          (prediction) {
+          (prediction) async {
             setState(() {
               apiData = prediction;
             });
             showPrediction = true;
+            getTimestamp();
             getPredictiveColor(prediction);
             getPredictiveText(prediction);
-            getTimestamp();
+            checkForChange();
+            updateNotifications();
             sensorReadings.removeAt(0);
+            await Future.delayed(Duration(seconds: 5));
           },
         );
         sensorDataStreamSubscription.resume();
       }
-    });
-  }
-
-  void getAPIPrediction() {
-    final uid = _auth.getUserID;
-    final PredictionDatabaseService _prediction =
-        PredictionDatabaseService(uid: uid);
-    _prediction.getMLPredictions();
-  }
-
-  void getDatabasePrediction() {
-    final uid = _auth.getUserID;
-    final UserDatabaseService _users = UserDatabaseService(uid: uid);
-
-    DatabaseReference user = _users.getUser;
-
-    DatabaseReference prediction = user.child("prediction");
-
-    prediction.onChildAdded.listen((event) {
-      print(event.snapshot.value);
     });
   }
 
@@ -134,10 +212,11 @@ class _ReadSensorDataState extends State<ReadSensorData> {
     final List<String> dateStamp = timestamp[0].split("-");
     final List<String> timeStamp = timestamp[1].split(":");
 
-    final String date = dateStamp[1] + "/" + dateStamp[2] + "/" + dateStamp[0];
+    final String date = dateStamp[1] + "-" + dateStamp[2] + "-" + dateStamp[0];
     final String time = timeStamp[0] + ":" + timeStamp[1];
 
     setState(() {
+      // today = date;
       dateTimestamp = date + " " + time;
     });
   }
@@ -175,101 +254,154 @@ class _ReadSensorDataState extends State<ReadSensorData> {
           Item(
             color: Colors.red,
             title: "Red Alert",
-            description: "Warning! You are at risk of lower back pain",
+            description: "Warning! You are at risk",
           ));
     }
   }
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      height: 200,
-      width: double.infinity,
-      margin: EdgeInsets.only(
-          top: getProportionateScreenWidth(5),
-          bottom: getProportionateScreenWidth(5)),
-      padding: EdgeInsets.symmetric(
-        horizontal: getProportionateScreenWidth(20),
-        vertical: getProportionateScreenWidth(15),
-      ),
-      decoration: BoxDecoration(
-        color: Color.fromARGB(255, 63, 62, 62),
-        borderRadius: BorderRadius.circular(20),
-      ),
-      child: Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
-        Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Text.rich(
-              TextSpan(
-                text: "Back Health",
-                style: TextStyle(
-                  fontSize: getProportionateScreenWidth(15),
-                  fontWeight: FontWeight.normal,
-                  color: kPrimaryColor,
-                ),
-              ),
-            ),
-            Container(
-              padding: EdgeInsets.symmetric(
-                horizontal: getProportionateScreenWidth(1),
-              ),
-              child: Row(
+    var trendList = predictionItems.entries.toList();
+
+    return Column(
+      children: [
+        Container(
+          height: 200,
+          width: double.infinity,
+          margin: EdgeInsets.only(
+              top: getProportionateScreenWidth(5),
+              bottom: getProportionateScreenWidth(5)),
+          padding: EdgeInsets.symmetric(
+            horizontal: getProportionateScreenWidth(20),
+            vertical: getProportionateScreenWidth(15),
+          ),
+          decoration: BoxDecoration(
+            color: Color.fromARGB(255, 63, 62, 62),
+            borderRadius: BorderRadius.circular(20),
+          ),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Column(
+                mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   Text.rich(
                     TextSpan(
-                      style: TextStyle(color: Colors.white),
+                      text: "Back Health",
+                      style: TextStyle(
+                        fontSize: getProportionateScreenWidth(15),
+                        fontWeight: FontWeight.normal,
+                        color: kPrimaryColor,
+                      ),
+                    ),
+                  ),
+                  Container(
+                    padding: EdgeInsets.symmetric(
+                      horizontal: getProportionateScreenWidth(1),
+                    ),
+                    child: Row(
                       children: [
-                        TextSpan(
-                          text: showPrediction ? apiData! + " : " : "",
-                          style: TextStyle(
-                            fontSize: getProportionateScreenWidth(20),
-                            fontWeight: FontWeight.bold,
-                            color: predictiveColor,
+                        Text.rich(
+                          TextSpan(
+                            style: TextStyle(color: Colors.white),
+                            children: [
+                              TextSpan(
+                                text: showPrediction ? apiData! + " : " : "",
+                                style: TextStyle(
+                                  fontSize: getProportionateScreenWidth(20),
+                                  fontWeight: FontWeight.bold,
+                                  color: predictiveColor,
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                        Text.rich(
+                          TextSpan(
+                            style: TextStyle(color: Colors.white),
+                            children: [
+                              TextSpan(
+                                text: showPrediction
+                                    ? predictiveText
+                                    : "No activity",
+                                style: TextStyle(
+                                  fontSize: getProportionateScreenWidth(20),
+                                  fontWeight: FontWeight.normal,
+                                  color: showPrediction
+                                      ? predictiveColor
+                                      : Colors.grey,
+                                ),
+                              ),
+                            ],
                           ),
                         ),
                       ],
                     ),
                   ),
+                  SizedBox(height: getProportionateScreenHeight(30)),
                   Text.rich(
                     TextSpan(
-                      style: TextStyle(color: Colors.white),
-                      children: [
-                        TextSpan(
-                          text: showPrediction ? predictiveText : "No activity",
-                          style: TextStyle(
-                            fontSize: getProportionateScreenWidth(20),
-                            fontWeight: FontWeight.normal,
-                            color:
-                                showPrediction ? predictiveColor : Colors.grey,
-                          ),
-                        ),
-                      ],
+                      text: showPrediction ? dateTimestamp : "",
+                      style: TextStyle(
+                        fontSize: getProportionateScreenWidth(15),
+                        fontWeight: FontWeight.normal,
+                        color: kPrimaryColor,
+                      ),
                     ),
                   ),
                 ],
               ),
-            ),
-            SizedBox(height: getProportionateScreenHeight(30)),
-            Text.rich(
-              TextSpan(
-                text: showPrediction ? dateTimestamp : "",
-                style: TextStyle(
-                  fontSize: getProportionateScreenWidth(15),
-                  fontWeight: FontWeight.normal,
-                  color: kPrimaryColor,
+              Container(
+                child: CircleAvatar(
+                  radius: getProportionateScreenWidth(85),
+                  backgroundColor:
+                      showPrediction ? predictiveColor : Colors.grey,
                 ),
               ),
-            ),
-          ],
-        ),
-        Container(
-          child: CircleAvatar(
-            radius: getProportionateScreenWidth(85),
-            backgroundColor: showPrediction ? predictiveColor : Colors.grey,
+            ],
           ),
         ),
-      ]),
+        SizedBox(height: getProportionateScreenWidth(30)),
+        SectionTitle(title: 'Summary'),
+        SizedBox(height: getProportionateScreenWidth(10)),
+        Container(
+          height: 180,
+          child: hasPastPredictions
+              ? ListView.builder(
+                  shrinkWrap: true,
+                  physics: AlwaysScrollableScrollPhysics(),
+                  itemCount: predictionItems.length,
+                  itemBuilder: (context, index) {
+                    return Container(
+                      margin: EdgeInsets.only(
+                          top: getProportionateScreenWidth(5),
+                          bottom: getProportionateScreenWidth(5)),
+                      decoration: BoxDecoration(
+                        color: Color.fromARGB(255, 63, 62, 62),
+                        borderRadius: BorderRadius.circular(20),
+                      ),
+                      child: ListTile(
+                        leading: Icon(
+                          Icons.scale,
+                          color: kPrimaryColor,
+                        ),
+                        title: Text(
+                          trendList[index].key,
+                          style: TextStyle(color: Colors.white, fontSize: 22),
+                        ),
+                        trailing: Text(
+                            predictionItems[trendList[index].key].toString(),
+                            style: TextStyle(
+                              color: Colors.white,
+                              fontSize: 22,
+                            )),
+                      ),
+                    );
+                  })
+              : Text("No Past Predictions",
+                  style: TextStyle(color: Colors.white, fontSize: 22)),
+        )
+      ],
     );
   }
 

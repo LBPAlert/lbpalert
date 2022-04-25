@@ -1,7 +1,6 @@
 import 'dart:async';
 import 'package:lbpalert/models/user.dart';
 import 'package:firebase_database/firebase_database.dart';
-import 'package:lbpalert/services/api.dart';
 
 class UserDatabaseService {
   final String uid;
@@ -77,59 +76,5 @@ class UserDatabaseService {
 
   DatabaseReference get getUser {
     return _users.child(uid);
-  }
-}
-
-class PredictionDatabaseService {
-  final String uid;
-  PredictionDatabaseService({required this.uid});
-
-  final List<List<double>> sensorReadings = [];
-  late StreamSubscription sensorDataStreamSubscription;
-
-  final DatabaseReference _sensorRef =
-      FirebaseDatabase.instance.ref("Sensor_Data");
-
-  Future getMLPredictions() async {
-    Stream<DatabaseEvent> sensorDataStream = _sensorRef.onValue;
-    sensorDataStreamSubscription =
-        sensorDataStream.listen((DatabaseEvent event) async {
-      final sensor00 =
-          (event.snapshot.value as dynamic)["sEMG00"]["voltage_Level"];
-      final sensor01 =
-          (event.snapshot.value as dynamic)["sEMG01"]["voltage_Level"];
-      final sensor10 =
-          (event.snapshot.value as dynamic)["sEMG10"]["voltage_Level"];
-      final sensor11 =
-          (event.snapshot.value as dynamic)["sEMG11"]["voltage_Level"];
-
-      sensorReadings.add([sensor00, sensor01, sensor10, sensor11]);
-
-      print(sensorReadings.length);
-
-      if (sensorReadings.length == 500) {
-        sensorDataStreamSubscription.pause();
-        final json = sensorReadings.toString();
-        await makePostRequest(json).then(
-          (prediction) {
-            // setState(() {
-            //   apiData = prediction;
-            // });
-            // getPredictiveColor(prediction);
-            DatabaseReference predictionListRef =
-                FirebaseDatabase.instance.ref("users/$uid/predictions");
-            DatabaseReference newPredictionRef = predictionListRef.push();
-            final now = DateTime.now().toString().split(".");
-            final timestamp = now[0];
-
-            newPredictionRef.set({
-              timestamp: prediction,
-            });
-            sensorReadings.removeAt(0);
-          },
-        );
-        sensorDataStreamSubscription.resume();
-      }
-    });
   }
 }
