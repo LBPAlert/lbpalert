@@ -1,8 +1,7 @@
 import 'package:flutter/material.dart';
-
 import '../../../constants.dart';
 import '../../../size_config.dart';
-import 'package:firebase_database/firebase_database.dart';
+import 'read_sensor_data.dart';
 
 class Averages extends StatefulWidget {
   @override
@@ -10,7 +9,11 @@ class Averages extends StatefulWidget {
 }
 
 class _AveragesState extends State<Averages> {
-  String sensorData = "Insert Data Here";
+  bool showPrediction = false;
+  Map<String, int> mockItems = {};
+  String? dateTimestamp;
+  int dailyAverage = 0;
+  int cnt = 0;
 
   Map<String, int> items = {
     'Mon': 3,
@@ -20,36 +23,49 @@ class _AveragesState extends State<Averages> {
     'Sun': 10
   };
 
-  DatabaseReference ref = FirebaseDatabase.instance.ref('SWE_test(1)');
-
   @override
   void initState() {
     super.initState();
-    activateListeners();
+    calculateDailyAverage();
   }
 
-  void activateListeners() {
-    DatabaseReference child = ref.child("raw_value");
-    Stream<DatabaseEvent> dailyStream = child.onValue;
+  void calculateDailyAverage() {
+    if (mockItems.isNotEmpty) {
+      showPrediction = true;
+    }
+    getTimestamp();
+    if (mockItems.containsKey(dateTimestamp)) {
+      int value = mockItems[dateTimestamp]!;
+      value = ((value) / cnt).floor();
+    } else {
+      mockItems[dateTimestamp!] = dailyAverage;
+    }
+  }
 
-    // Subscribe to the stream!
-    dailyStream.listen((DatabaseEvent event) {
-      setState(() {
-        sensorData = '${event.snapshot.value}';
-      });
+  void getTimestamp() {
+    final List<String> timestamp = DateTime.now().toString().split(" ");
+
+    final List<String> dateStamp = timestamp[0].split("-");
+    final List<String> timeStamp = timestamp[1].split(":");
+
+    final String date = dateStamp[1] + "/" + dateStamp[2] + "/" + dateStamp[0];
+    final String time = timeStamp[0] + ":" + timeStamp[1];
+
+    setState(() {
+      dateTimestamp = date + " " + time;
     });
   }
 
   @override
   Widget build(BuildContext context) {
-    var trendList = items.entries.toList();
+    var trendList = mockItems.entries.toList();
 
     return Container(
       height: 180,
       child: ListView.builder(
           shrinkWrap: true,
           physics: AlwaysScrollableScrollPhysics(),
-          itemCount: items.length,
+          itemCount: mockItems.length,
           itemBuilder: (context, index) {
             return Container(
               margin: EdgeInsets.only(
@@ -65,10 +81,13 @@ class _AveragesState extends State<Averages> {
                   color: kPrimaryColor,
                 ),
                 title: Text(
-                  trendList[index].key,
+                  showPrediction ? trendList[index].key : "No past activity",
                   style: TextStyle(color: Colors.white, fontSize: 22),
                 ),
-                trailing: Text(items[trendList[index].key].toString(),
+                trailing: Text(
+                    showPrediction
+                        ? mockItems[trendList[index].key].toString()
+                        : "",
                     style: TextStyle(
                       color: Colors.white,
                       fontSize: 22,

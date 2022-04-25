@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:lbpalert/screens/home/components/date.dart';
 import 'package:lbpalert/screens/home/components/greetings.dart';
 import 'package:lbpalert/screens/home/components/section_title.dart';
-
 import '../../../size_config.dart';
 import 'read_sensor_data.dart';
 import 'averages.dart';
@@ -22,10 +21,10 @@ class Body extends StatelessWidget {
             SectionTitle(title: 'Activity'),
             SizedBox(height: getProportionateScreenWidth(10)),
             ReadSensorData(),
-            SizedBox(height: getProportionateScreenWidth(30)),
-            SectionTitle(title: 'Summary'),
-            SizedBox(height: getProportionateScreenWidth(10)),
-            Averages(),
+            // SizedBox(height: getProportionateScreenWidth(30)),
+            // SectionTitle(title: 'Summary'),
+            // SizedBox(height: getProportionateScreenWidth(10)),
+            // Averages(),
           ],
         ),
       ),
