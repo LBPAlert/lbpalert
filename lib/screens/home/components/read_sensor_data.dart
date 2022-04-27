@@ -3,12 +3,14 @@ import 'dart:convert';
 import 'dart:math';
 import 'package:flutter/material.dart';
 import 'package:lbpalert/constants.dart';
+import 'package:lbpalert/screens/trend/components/chart.dart';
 import 'package:lbpalert/services/api.dart';
 import 'package:lbpalert/services/auth.dart';
 import '../../../size_config.dart';
 import 'package:firebase_database/firebase_database.dart';
 import 'package:lbpalert/models/notif_item.dart';
 import 'package:lbpalert/screens/home/components/section_title.dart';
+import 'package:charts_flutter/flutter.dart' as charts;
 
 class ReadSensorData extends StatefulWidget {
   @override
@@ -25,23 +27,28 @@ class _ReadSensorDataState extends State<ReadSensorData> {
   bool isChanged = false;
   Color? currentColor = Colors.grey;
   Color? predictiveColor;
-  int cnt = 0;
-  int total = 0;
-  int numChildren = 0;
+  int? cnt;
+  int? total;
   Map<String, dynamic> predictionItems = {};
-  Map<String, int> items = {
-    'Mon': 3,
-    'Thurs': 4,
-    'Sat': 6,
-    'Wed': 7,
-    'Sun': 10
-  };
 
   @override
   void initState() {
     super.initState();
     // activateListeners();
+    checkPastPredictions();
     randomIntegerGenerator();
+  }
+
+  void checkPastPredictions() async {
+    final AuthService _auth = AuthService();
+    final uid = _auth.getUserID;
+    final DatabaseReference _aveRef =
+        FirebaseDatabase.instance.ref("users/$uid/daily_averages");
+    final _aveRefSnap = await _aveRef.get();
+    if (_aveRefSnap.children.isNotEmpty) {
+      hasPastPredictions = true;
+      getPastPredictions(_aveRefSnap);
+    }
   }
 
   void randomIntegerGenerator() async {
@@ -91,41 +98,71 @@ class _ReadSensorDataState extends State<ReadSensorData> {
     final uid = _auth.getUserID;
     final DatabaseReference _aveRef =
         FirebaseDatabase.instance.ref("users/$uid/daily_averages");
-
+    final _aveRefSnap = await _aveRef.get();
     final _aveSnap = await _aveRef.child(today!).get();
 
     if (_aveSnap.exists) {
-      cnt += 1;
-      total += value;
-      _aveRef.update({
-        today!: (total / cnt).floor(),
-      });
-    } else {
-      cnt = 1;
-      numChildren += 1;
-      total = value;
-      if (numChildren != 1) {
-        hasPastPredictions = true;
-        getPastPredictions();
+      final DatabaseReference _dateRef =
+          FirebaseDatabase.instance.ref("users/$uid/daily_averages/$today");
+      final _aveData = await _dateRef.get();
+      if (_aveData.exists) {
+        cnt = (_aveData.value as dynamic)["count"];
+        total = (_aveData.value as dynamic)["total"];
+        cnt = (cnt! + 1);
+        total = (total! + value);
+        _dateRef.update({
+          "count": cnt,
+          "total": total,
+          "average": (total! / cnt!).floor(),
+        });
       }
-      _aveRef.update({
-        today!: value,
+    } else {
+      // if (_aveRefSnap.children.isNotEmpty) {
+      //   hasPastPredictions = true;
+      //   getPastPredictions(_aveRefSnap);
+      // }
+      checkPastPredictions();
+      final DatabaseReference _dateRef =
+          FirebaseDatabase.instance.ref("users/$uid/daily_averages/$today");
+      _dateRef.update({
+        "count": 1,
+        "total": value,
+        "average": value,
       });
     }
   }
 
-  void getPastPredictions() async {
-    final AuthService _auth = AuthService();
-    final uid = _auth.getUserID;
-    final DatabaseReference _aveRef =
-        FirebaseDatabase.instance.ref("users/$uid/daily_averages");
-
-    final _aveRefSnap = await _aveRef.get();
-
-    if (_aveRefSnap.exists) {
-      predictionItems = jsonDecode(jsonEncode(_aveRefSnap.value));
+  void getPastPredictions(aveRefSnap) async {
+    if (aveRefSnap.exists) {
+      predictionItems = jsonDecode(jsonEncode((aveRefSnap.value)));
+      // passing predictionItems to trends
+      // var seriesList = _createTrends(predictionItems.entries.toList());
+      // TrendsChart(seriesList);
     }
   }
+
+  // static List<charts.Series<BackData, DateTime>> _createTrends(seriesList) {
+  //   // convert date string to DateTime object
+  //   seriesList.sort((a, b) => a.key.compareTo(b.key));
+  //   final List<BackData> trendsData = [];
+
+  //   for (int i = 0; i < seriesList.length; i++) {
+  //     var date = seriesList[i].key.split("-");
+  //     var day = date[2] + "-" + date[0] + "-" + date[1] + " 00:00:00.000";
+  //     trendsData
+  //         .add(BackData(DateTime.parse(day), seriesList[i].value["average"]));
+  //   }
+
+  //   return [
+  //     charts.Series<BackData, DateTime>(
+  //       id: '',
+  //       colorFn: (_, __) => charts.MaterialPalette.deepOrange.shadeDefault,
+  //       domainFn: (BackData back, _) => back.day,
+  //       measureFn: (BackData back, _) => back.backData,
+  //       data: trendsData,
+  //     )
+  //   ];
+  // }
 
   void activateListeners() {
     final List<List<double>> sensorReadings = [];
@@ -262,6 +299,7 @@ class _ReadSensorDataState extends State<ReadSensorData> {
   @override
   Widget build(BuildContext context) {
     var trendList = predictionItems.entries.toList();
+    trendList.sort((b, a) => a.key.compareTo(b.key));
 
     return Column(
       children: [
@@ -370,7 +408,7 @@ class _ReadSensorDataState extends State<ReadSensorData> {
               ? ListView.builder(
                   shrinkWrap: true,
                   physics: AlwaysScrollableScrollPhysics(),
-                  itemCount: predictionItems.length,
+                  itemCount: trendList.length,
                   itemBuilder: (context, index) {
                     return Container(
                       margin: EdgeInsets.only(
@@ -390,7 +428,8 @@ class _ReadSensorDataState extends State<ReadSensorData> {
                           style: TextStyle(color: Colors.white, fontSize: 22),
                         ),
                         trailing: Text(
-                            predictionItems[trendList[index].key].toString(),
+                            predictionItems[trendList[index].key]["average"]
+                                .toString(),
                             style: TextStyle(
                               color: Colors.white,
                               fontSize: 22,
