@@ -3,14 +3,12 @@ import 'dart:convert';
 import 'dart:math';
 import 'package:flutter/material.dart';
 import 'package:lbpalert/constants.dart';
-import 'package:lbpalert/screens/trend/components/chart.dart';
 import 'package:lbpalert/services/api.dart';
 import 'package:lbpalert/services/auth.dart';
 import '../../../size_config.dart';
 import 'package:firebase_database/firebase_database.dart';
 import 'package:lbpalert/models/notif_item.dart';
 import 'package:lbpalert/screens/home/components/section_title.dart';
-import 'package:charts_flutter/flutter.dart' as charts;
 
 class ReadSensorData extends StatefulWidget {
   @override
@@ -47,7 +45,9 @@ class _ReadSensorDataState extends State<ReadSensorData> {
     final _aveRefSnap = await _aveRef.get();
     if (_aveRefSnap.children.isNotEmpty) {
       hasPastPredictions = true;
-      getPastPredictions(_aveRefSnap);
+      if (_aveRefSnap.exists) {
+        predictionItems = jsonDecode(jsonEncode((_aveRefSnap.value)));
+      }
     }
   }
 
@@ -117,10 +117,6 @@ class _ReadSensorDataState extends State<ReadSensorData> {
         });
       }
     } else {
-      // if (_aveRefSnap.children.isNotEmpty) {
-      //   hasPastPredictions = true;
-      //   getPastPredictions(_aveRefSnap);
-      // }
       checkPastPredictions();
       final DatabaseReference _dateRef =
           FirebaseDatabase.instance.ref("users/$uid/daily_averages/$today");
@@ -131,38 +127,6 @@ class _ReadSensorDataState extends State<ReadSensorData> {
       });
     }
   }
-
-  void getPastPredictions(aveRefSnap) async {
-    if (aveRefSnap.exists) {
-      predictionItems = jsonDecode(jsonEncode((aveRefSnap.value)));
-      // passing predictionItems to trends
-      // var seriesList = _createTrends(predictionItems.entries.toList());
-      // TrendsChart(seriesList);
-    }
-  }
-
-  // static List<charts.Series<BackData, DateTime>> _createTrends(seriesList) {
-  //   // convert date string to DateTime object
-  //   seriesList.sort((a, b) => a.key.compareTo(b.key));
-  //   final List<BackData> trendsData = [];
-
-  //   for (int i = 0; i < seriesList.length; i++) {
-  //     var date = seriesList[i].key.split("-");
-  //     var day = date[2] + "-" + date[0] + "-" + date[1] + " 00:00:00.000";
-  //     trendsData
-  //         .add(BackData(DateTime.parse(day), seriesList[i].value["average"]));
-  //   }
-
-  //   return [
-  //     charts.Series<BackData, DateTime>(
-  //       id: '',
-  //       colorFn: (_, __) => charts.MaterialPalette.deepOrange.shadeDefault,
-  //       domainFn: (BackData back, _) => back.day,
-  //       measureFn: (BackData back, _) => back.backData,
-  //       data: trendsData,
-  //     )
-  //   ];
-  // }
 
   void activateListeners() {
     final List<List<double>> sensorReadings = [];
@@ -298,8 +262,43 @@ class _ReadSensorDataState extends State<ReadSensorData> {
 
   @override
   Widget build(BuildContext context) {
+    var finalList = [];
+    final MONTHS = [
+      "JAN",
+      "FEB",
+      "MAR",
+      "APR",
+      "MAY",
+      "JUN",
+      "JUL",
+      "AUG",
+      "SEP",
+      "OCT",
+      "NOV",
+      "DEC",
+    ];
+    final DAYS = [
+      "NULL",
+      "MON",
+      "TUE",
+      "WED",
+      "THUR",
+      "FRI",
+      "SAT",
+      "SUN",
+    ];
     var trendList = predictionItems.entries.toList();
     trendList.sort((b, a) => a.key.compareTo(b.key));
+    for (int i = 0; i < trendList.length; i++) {
+      var date = trendList[i].key.split("-");
+      var day = date[2] + "-" + date[0] + "-" + date[1] + " 00:00:00.000";
+      var t = DateTime.parse(day);
+      finalList.add((DAYS[t.weekday] +
+          ', ' +
+          MONTHS[t.month - 1] +
+          ' ' +
+          t.day.toString()));
+    }
 
     return Column(
       children: [
@@ -424,21 +423,26 @@ class _ReadSensorDataState extends State<ReadSensorData> {
                           color: kPrimaryColor,
                         ),
                         title: Text(
-                          trendList[index].key,
-                          style: TextStyle(color: Colors.white, fontSize: 22),
+                          finalList[index], //trendList[index].key,
+                          style: TextStyle(color: kPrimaryColor, fontSize: 17),
                         ),
                         trailing: Text(
                             predictionItems[trendList[index].key]["average"]
                                 .toString(),
                             style: TextStyle(
-                              color: Colors.white,
+                              color: kPrimaryColor,
                               fontSize: 22,
                             )),
                       ),
                     );
                   })
-              : Text("No Past Predictions",
-                  style: TextStyle(color: Colors.white, fontSize: 22)),
+              : Column(
+                  children: [
+                    SizedBox(height: getProportionateScreenWidth(30)),
+                    Text("No Past Predictions",
+                        style: TextStyle(color: kPrimaryColor, fontSize: 17)),
+                  ],
+                ),
         )
       ],
     );

@@ -42,6 +42,7 @@ dependencies:
   firebase_storage: ^10.2.11
   image_picker: ^0.8.5
   firebase_messaging: ^11.2.13
+  syncfusion_flutter_charts: ^20.1.51
 
   # # Add the dependencies for any other Firebase products you want to use in your app
   # # For example, to use Firebase Authentication and Cloud Firestore
