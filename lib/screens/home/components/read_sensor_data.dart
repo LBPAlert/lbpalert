@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:lbpalert/constants.dart';
 import 'package:lbpalert/services/api.dart';
 import 'package:lbpalert/services/auth.dart';
+import 'package:lbpalert/services/database.dart';
 import '../../../size_config.dart';
 import 'package:firebase_database/firebase_database.dart';
 import 'package:lbpalert/models/notif_item.dart';
@@ -27,6 +28,7 @@ class _ReadSensorDataState extends State<ReadSensorData> {
   Color? predictiveColor;
   int? cnt;
   int? total;
+  int? painTarget;
   Map<String, dynamic> predictionItems = {};
 
   @override
@@ -81,6 +83,7 @@ class _ReadSensorDataState extends State<ReadSensorData> {
         });
       }
       showPrediction = true;
+      getUserTarget();
       getTimestamp();
       calculateDailyAverage(apiData);
       getPredictiveColor(apiData);
@@ -161,6 +164,7 @@ class _ReadSensorDataState extends State<ReadSensorData> {
               apiData = prediction;
             });
             showPrediction = true;
+            getUserTarget();
             getTimestamp();
             getPredictiveColor(prediction);
             getPredictiveText(prediction);
@@ -204,6 +208,29 @@ class _ReadSensorDataState extends State<ReadSensorData> {
       setState(() {
         predictiveText = "WARNING";
       });
+    }
+  }
+
+  void getUserTarget() async {
+    final AuthService _auth = AuthService();
+    final uid = _auth.getUserID;
+    final UserDatabaseService _users = UserDatabaseService(uid: uid);
+
+    DatabaseReference child = _users.getUser;
+    final userData = await child.get();
+    if (userData.exists) {
+      setState(() {
+        painTarget = (userData.value as dynamic)["pain_target"];
+      });
+      if (int.parse(apiData!) > painTarget!) {
+        notifications.insert(
+            0,
+            Item(
+              color: Colors.red,
+              title: "Above Target",
+              description: "Warning! You are above your target",
+            ));
+      }
     }
   }
 
