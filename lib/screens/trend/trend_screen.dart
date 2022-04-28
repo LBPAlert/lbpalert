@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:lbpalert/screens/trend/components/body.dart';
 import 'package:lbpalert/screens/trend/components/chart.dart';
 import '/components/coustom_bottom_nav_bar.dart';
 import '/enums.dart';
@@ -14,15 +13,8 @@ class TrendScreen extends StatelessWidget {
         automaticallyImplyLeading: false,
         foregroundColor: Colors.white,
         backgroundColor: Colors.black,
-        // title: Text(
-        //   "Summary",
-        //   style: TextStyle(color: Colors.white),
-        // ),
       ),
-      //body: TrendsChart.withSampleData(),
-
-      // body: Body(),
-      body: TrendsChart(),
+      body: TrendsScreen(),
       //bottomNavigationBar: CustomBottomNavBar(selectedMenu: MenuState.trend),
     );
   }
