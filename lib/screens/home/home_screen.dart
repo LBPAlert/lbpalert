@@ -1,12 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:lbpalert/screens/home/components/first_body.dart';
 import 'package:lbpalert/screens/profile/profile_screen.dart';
 import 'package:lbpalert/screens/trend/trend_screen.dart';
-import '/components/coustom_bottom_nav_bar.dart';
-import 'package:flutter_svg/flutter_svg.dart';
-import '/enums.dart';
 import '/constants.dart';
-
 import 'components/body.dart';
 
 class HomeScreen extends StatefulWidget {
@@ -20,7 +15,6 @@ class _HomeScreenState extends State<HomeScreen> {
   final Color inActiveIconColor = Color(0xFFB6B6B6);
 
   List pages = [Body(), TrendScreen(), ProfileScreen()];
-
   int currentIndex = 0;
   List titleText = ["Home", "Trends", "Profile"];
 

@@ -57,14 +57,14 @@ class _CompleteProfileFormState extends State<CompleteProfileForm> {
             text: "Register",
             press: () async {
               if (_formKey.currentState!.validate()) {
-                // Navigator.pushNamed(context, OtpScreen.routeName); DO WE NEED?
                 await UserDatabaseService(uid: user_id).createUserData(
                     firstName!,
                     lastName!,
                     phoneNumber!,
                     address!,
                     "",
-                    defaultPainRating);
+                    defaultPainRating,
+                    "");
                 KeyboardUtil.hideKeyboard(context);
                 Navigator.pushNamed(context, HomeScreen.routeName);
               }
