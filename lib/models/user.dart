@@ -12,6 +12,7 @@ class FirebaseUserData {
   final String address;
   final String profilePic;
   final int painTarget;
+  final String deviceID;
 
   FirebaseUserData(
       {required this.uid,
@@ -20,5 +21,6 @@ class FirebaseUserData {
       required this.phoneNumber,
       required this.address,
       required this.profilePic,
-      required this.painTarget});
+      required this.painTarget,
+      required this.deviceID});
 }

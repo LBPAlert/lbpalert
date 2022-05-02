@@ -8,8 +8,14 @@ class UserDatabaseService {
 
   final DatabaseReference _users = FirebaseDatabase.instance.ref("users");
 
-  Future createUserData(String firstname, String lastname, String phoneNum,
-      String address, String profilePic, int painTarget) async {
+  Future createUserData(
+      String firstname,
+      String lastname,
+      String phoneNum,
+      String address,
+      String profilePic,
+      int painTarget,
+      String deviceID) async {
     return await _users
         .child(uid)
         .set({
@@ -19,6 +25,7 @@ class UserDatabaseService {
           "address": address,
           "profile_pic": profilePic,
           "pain_target": painTarget,
+          "device_id": deviceID,
         })
         .then((value) => print("User Added"))
         .catchError((error) => print("Failed to add user: $error"));
@@ -58,6 +65,16 @@ class UserDatabaseService {
         .catchError((error) => print("Failed to update pain target: $error"));
   }
 
+  Future updateDeviceID(String deviceID) async {
+    return await _users
+        .child(uid)
+        .update({
+          'device_id': deviceID,
+        })
+        .then((value) => print("Device ID Updated"))
+        .catchError((error) => print("Failed to update device ID: $error"));
+  }
+
   // get streams
   FirebaseUserData _userDataFromSnapshot(DatabaseEvent event) {
     return FirebaseUserData(
@@ -67,7 +84,8 @@ class UserDatabaseService {
         phoneNumber: (event.snapshot.value as dynamic)['phone_number'],
         address: (event.snapshot.value as dynamic)['address'],
         profilePic: (event.snapshot.value as dynamic)['profile_pic'],
-        painTarget: (event.snapshot.value as dynamic)['pain_target']);
+        painTarget: (event.snapshot.value as dynamic)['pain_target'],
+        deviceID: (event.snapshot.value as dynamic)['device_id']);
   }
 
   Stream<FirebaseUserData> get userData {

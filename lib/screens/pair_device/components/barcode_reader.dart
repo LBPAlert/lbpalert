@@ -1,17 +1,19 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
+import 'package:flutter_barcode_scanner/flutter_barcode_scanner.dart';
 import 'package:lbpalert/components/default_button.dart';
 import 'package:lbpalert/helper/keyboard.dart';
 import 'package:lbpalert/screens/home/home_screen.dart';
 import 'package:lbpalert/services/auth.dart';
 import 'package:lbpalert/services/database.dart';
-import '/size_config.dart';
+import 'package:lbpalert/size_config.dart';
 
-class Unpair extends StatefulWidget {
+class PairBarcode extends StatefulWidget {
   @override
-  State<Unpair> createState() => _UnpairState();
+  State<PairBarcode> createState() => _PairBarcodeState();
 }
 
-class _UnpairState extends State<Unpair> {
+class _PairBarcodeState extends State<PairBarcode> {
   final AuthService _auth = AuthService();
 
   @override
@@ -19,9 +21,23 @@ class _UnpairState extends State<Unpair> {
     super.initState();
   }
 
+  void readBarcode() async {
+    String barcodeScanRes;
+    final userId = _auth.getUserID;
+
+    try {
+      barcodeScanRes = await FlutterBarcodeScanner.scanBarcode(
+          '$Colors.black', "Cancel", true, ScanMode.QR);
+      await UserDatabaseService(uid: userId).updateDeviceID(barcodeScanRes);
+      KeyboardUtil.hideKeyboard(context);
+      Navigator.pushNamed(context, HomeScreen.routeName);
+    } on PlatformException {
+      barcodeScanRes = "";
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
-    final userId = _auth.getUserID;
     return SafeArea(
       child: SizedBox(
         width: double.infinity,
@@ -31,16 +47,12 @@ class _UnpairState extends State<Unpair> {
           child: SingleChildScrollView(
             child: Column(
               children: [
-                Image.asset('assets/images/wearable.png'),
-                Text('Wearable Connected'),
                 SizedBox(height: SizeConfig.screenHeight * 0.03),
                 SizedBox(height: SizeConfig.screenHeight * 0.06),
                 DefaultButton(
-                    text: "Unpair",
+                    text: 'Scan QR code to pair wearable',
                     press: () async {
-                      await UserDatabaseService(uid: userId).updateDeviceID("");
-                      KeyboardUtil.hideKeyboard(context);
-                      Navigator.pushNamed(context, HomeScreen.routeName);
+                      readBarcode();
                     }),
                 SizedBox(height: getProportionateScreenHeight(30)),
               ],
