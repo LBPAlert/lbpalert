@@ -52,8 +52,6 @@ class _BodyState extends State<Body> {
 
   @override
   Widget build(BuildContext context) {
-    print(hasPastPredictions);
-    print(deviceInDB);
     return SafeArea(
       child: SingleChildScrollView(
         child: Column(
