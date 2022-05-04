@@ -30,7 +30,7 @@ class Body extends StatelessWidget {
                 ),
               ),
               Text(
-                "Please enter your email and we will send \nyou a link to return to your account",
+                "Please enter your email and we will send \nyou a link to change your password",
                 textAlign: TextAlign.center,
               ),
               SizedBox(height: SizeConfig.screenHeight * 0.1),

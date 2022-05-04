@@ -1,6 +1,7 @@
 import 'package:firebase_database/firebase_database.dart';
 import 'package:lbpalert/screens/notifications/notifications_screen.dart';
 import 'package:lbpalert/screens/settings/settings_screen.dart';
+import 'package:lbpalert/screens/sign_in/sign_in_screen.dart';
 import 'package:lbpalert/screens/splash/splash_screen.dart';
 import 'package:lbpalert/services/auth.dart';
 import 'package:lbpalert/services/database.dart';
@@ -96,7 +97,7 @@ class _BodyState extends State<Body> {
             icon: "assets/icons/Log out.svg",
             press: () async {
               await _auth.signOut();
-              Navigator.pushNamed(context, SplashScreen.routeName);
+              Navigator.pushNamed(context, SignInScreen.routeName);
             },
           ),
         ],

@@ -1,9 +1,9 @@
+import 'package:lbpalert/screens/await_verification/await_verification_screen.dart';
 import 'package:lbpalert/services/auth.dart';
 import 'package:flutter/material.dart';
 import '/components/custom_surfix_icon.dart';
 import '/components/default_button.dart';
 import '/components/form_error.dart';
-import '/screens/complete_profile/complete_profile_screen.dart';
 import '../../../constants.dart';
 import '../../../size_config.dart';
 
@@ -15,6 +15,8 @@ class SignUpForm extends StatefulWidget {
 class _SignUpFormState extends State<SignUpForm> {
   final AuthService _auth = AuthService();
   final _formKey = GlobalKey<FormState>();
+  String? firstName;
+  String? lastName;
   String? email;
   String? password;
   String? conform_password;
@@ -42,6 +44,10 @@ class _SignUpFormState extends State<SignUpForm> {
       key: _formKey,
       child: Column(
         children: [
+          buildFirstNameFormField(),
+          SizedBox(height: getProportionateScreenHeight(30)),
+          buildLastNameFormField(),
+          SizedBox(height: getProportionateScreenHeight(30)),
           buildEmailFormField(),
           SizedBox(height: getProportionateScreenHeight(30)),
           buildPasswordFormField(),
@@ -62,7 +68,8 @@ class _SignUpFormState extends State<SignUpForm> {
                   });
                 } else {
                   // if all are valid then go to success screen
-                  Navigator.pushNamed(context, CompleteProfileScreen.routeName,
+                  Navigator.pushNamed(
+                      context, AwaitVerificationScreen.routeName,
                       arguments: {'uid': result.uid});
                 }
               }
@@ -170,6 +177,60 @@ class _SignUpFormState extends State<SignUpForm> {
         // if you r using flutter less then 1.20.* then maybe this is not working properly
         floatingLabelBehavior: FloatingLabelBehavior.always,
         suffixIcon: CustomSurffixIcon(svgIcon: "assets/icons/Mail.svg"),
+      ),
+    );
+  }
+
+  TextFormField buildLastNameFormField() {
+    return TextFormField(
+      onSaved: (newValue) => lastName = newValue,
+      onChanged: (value) {
+        if (value.isNotEmpty) {
+          removeError(error: kNamelNullError);
+        }
+        lastName = value;
+      },
+      validator: (value) {
+        if (value!.isEmpty) {
+          addError(error: kNamelNullError);
+          return "";
+        }
+        return null;
+      },
+      decoration: InputDecoration(
+        labelText: "Last Name",
+        hintText: "Enter your last name",
+        // If  you are using latest version of flutter then lable text and hint text shown like this
+        // if you r using flutter less then 1.20.* then maybe this is not working properly
+        floatingLabelBehavior: FloatingLabelBehavior.always,
+        suffixIcon: CustomSurffixIcon(svgIcon: "assets/icons/User.svg"),
+      ),
+    );
+  }
+
+  TextFormField buildFirstNameFormField() {
+    return TextFormField(
+      onSaved: (newValue) => firstName = newValue,
+      onChanged: (value) {
+        if (value.isNotEmpty) {
+          removeError(error: kNamelNullError);
+        }
+        firstName = value;
+      },
+      validator: (value) {
+        if (value!.isEmpty) {
+          addError(error: kNamelNullError);
+          return "";
+        }
+        return null;
+      },
+      decoration: InputDecoration(
+        labelText: "First Name",
+        hintText: "Enter your first name",
+        // If  you are using latest version of flutter then lable text and hint text shown like this
+        // if you r using flutter less then 1.20.* then maybe this is not working properly
+        floatingLabelBehavior: FloatingLabelBehavior.always,
+        suffixIcon: CustomSurffixIcon(svgIcon: "assets/icons/User.svg"),
       ),
     );
   }

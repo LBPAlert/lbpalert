@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import '/components/socal_card.dart';
 import '/constants.dart';
 import '/size_config.dart';
 
@@ -20,10 +19,10 @@ class Body extends StatelessWidget {
                 SizedBox(height: SizeConfig.screenHeight * 0.04), // 4%
                 Text("Register Account", style: headingStyle),
                 Text(
-                  "Complete your details or continue",
+                  "Complete your details below",
                   textAlign: TextAlign.center,
                 ),
-                SizedBox(height: SizeConfig.screenHeight * 0.08),
+                SizedBox(height: SizeConfig.screenHeight * 0.04),
                 SignUpForm(),
                 SizedBox(height: SizeConfig.screenHeight * 0.08),
                 SizedBox(height: getProportionateScreenHeight(20)),

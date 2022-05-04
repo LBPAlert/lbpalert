@@ -23,8 +23,7 @@ class _UpdateFormState extends State<UpdateForm> {
   final List<String?> errors = [];
   String? firstName;
   String? lastName;
-  String? phoneNumber;
-  String? address;
+  String? email;
 
   void addError({String? error}) {
     if (!errors.contains(error))
@@ -50,9 +49,7 @@ class _UpdateFormState extends State<UpdateForm> {
           SizedBox(height: getProportionateScreenHeight(30)),
           buildLastNameFormField(),
           SizedBox(height: getProportionateScreenHeight(30)),
-          buildPhoneNumberFormField(),
-          SizedBox(height: getProportionateScreenHeight(30)),
-          buildAddressFormField(),
+          buildEmailFormField(),
           FormError(errors: errors),
           SizedBox(height: getProportionateScreenHeight(40)),
           DefaultButton(
@@ -61,68 +58,14 @@ class _UpdateFormState extends State<UpdateForm> {
               if (_formKey.currentState!.validate()) {
                 _formKey.currentState!.save();
                 final user_id = _auth.getUserID;
-                await UserDatabaseService(uid: user_id).updateUserData(
-                    firstName!, lastName!, phoneNumber!, address!);
+                // await UserDatabaseService(uid: user_id).updateUserData(
+                //     firstName!, lastName!, phoneNumber!, address!);
                 KeyboardUtil.hideKeyboard(context);
                 Navigator.pushNamed(context, HomeScreen.routeName);
               }
             },
           ),
         ],
-      ),
-    );
-  }
-
-  TextFormField buildAddressFormField() {
-    return TextFormField(
-      onSaved: (newValue) => address = newValue,
-      onChanged: (value) {
-        if (value.isNotEmpty) {
-          removeError(error: kAddressNullError);
-        }
-        address = value;
-      },
-      validator: (value) {
-        if (value!.isEmpty) {
-          addError(error: kAddressNullError);
-          return "";
-        }
-        return null;
-      },
-      decoration: InputDecoration(
-        labelText: "Address",
-        hintText: "Enter your address",
-        // If  you are using latest version of flutter then lable text and hint text shown like this
-        // if you r using flutter less then 1.20.* then maybe this is not working properly
-        floatingLabelBehavior: FloatingLabelBehavior.always,
-        suffixIcon:
-            CustomSurffixIcon(svgIcon: "assets/icons/Location point.svg"),
-      ),
-    );
-  }
-
-  TextFormField buildPhoneNumberFormField() {
-    return TextFormField(
-      keyboardType: TextInputType.phone,
-      onSaved: (newValue) => phoneNumber = newValue,
-      onChanged: (value) {
-        if (value.isNotEmpty) {
-          removeError(error: kPhoneNumberNullError);
-        }
-        phoneNumber = value;
-      },
-      validator: (value) {
-        if (value!.isEmpty) {
-          addError(error: kPhoneNumberNullError);
-          return "";
-        }
-        return null;
-      },
-      decoration: InputDecoration(
-        labelText: "Phone Number",
-        hintText: "Enter your phone number",
-        floatingLabelBehavior: FloatingLabelBehavior.always,
-        suffixIcon: CustomSurffixIcon(svgIcon: "assets/icons/Phone.svg"),
       ),
     );
   }
@@ -177,6 +120,39 @@ class _UpdateFormState extends State<UpdateForm> {
         // if you r using flutter less then 1.20.* then maybe this is not working properly
         floatingLabelBehavior: FloatingLabelBehavior.always,
         suffixIcon: CustomSurffixIcon(svgIcon: "assets/icons/User.svg"),
+      ),
+    );
+  }
+
+  TextFormField buildEmailFormField() {
+    return TextFormField(
+      keyboardType: TextInputType.emailAddress,
+      onSaved: (newValue) => email = newValue,
+      onChanged: (value) {
+        if (value.isNotEmpty) {
+          removeError(error: kEmailNullError);
+        } else if (emailValidatorRegExp.hasMatch(value)) {
+          removeError(error: kInvalidEmailError);
+        }
+        return null;
+      },
+      validator: (value) {
+        if (value!.isEmpty) {
+          addError(error: kEmailNullError);
+          return "";
+        } else if (!emailValidatorRegExp.hasMatch(value)) {
+          addError(error: kInvalidEmailError);
+          return "";
+        }
+        return null;
+      },
+      decoration: InputDecoration(
+        labelText: "Email",
+        hintText: "Enter your email",
+        // If  you are using latest version of flutter then lable text and hint text shown like this
+        // if you r using flutter less then 1.20.* then maybe this is not working properly
+        floatingLabelBehavior: FloatingLabelBehavior.always,
+        suffixIcon: CustomSurffixIcon(svgIcon: "assets/icons/Mail.svg"),
       ),
     );
   }

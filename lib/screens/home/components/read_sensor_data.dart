@@ -10,6 +10,7 @@ import '../../../size_config.dart';
 import 'package:firebase_database/firebase_database.dart';
 import 'package:lbpalert/models/notif_item.dart';
 import 'package:lbpalert/screens/home/components/section_title.dart';
+import 'package:firebase_messaging/firebase_messaging.dart';
 
 class ReadSensorData extends StatefulWidget {
   @override
@@ -37,6 +38,19 @@ class _ReadSensorDataState extends State<ReadSensorData> {
     // activateListeners();
     checkPastPredictions();
     randomIntegerGenerator();
+    FirebaseMessaging.instance.getInitialMessage();
+    // App in foreground
+    FirebaseMessaging.onMessage.listen((message) {
+      if (message.notification != null) {
+        print(message.notification!.body);
+      }
+    });
+    // App in background but still running and user taps on the notification
+    // from the device tray
+    FirebaseMessaging.onMessageOpenedApp.listen((message) {
+      final routeFromMessage = message.data["route"];
+      Navigator.of(context).pushNamed(routeFromMessage);
+    });
   }
 
   void checkPastPredictions() async {
