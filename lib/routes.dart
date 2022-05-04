@@ -1,5 +1,8 @@
 import 'package:flutter/widgets.dart';
+import 'package:lbpalert/screens/await_password/await_password_screen.dart';
+import 'package:lbpalert/screens/await_verification/await_verification_screen.dart';
 import 'package:lbpalert/screens/change_password/change_password_screen.dart';
+import 'package:lbpalert/screens/forgot_password_form/password.dart';
 import 'package:lbpalert/screens/notifications/notifications_screen.dart';
 import 'package:lbpalert/screens/pair_device/pair_device_screen.dart';
 import 'package:lbpalert/screens/set_target/set_target_screen.dart';
@@ -27,6 +30,8 @@ final Map<String, WidgetBuilder> routes = {
   SignUpScreen.routeName: (context) => SignUpScreen(),
   CompleteProfileScreen.routeName: (context) => CompleteProfileScreen(),
   OtpScreen.routeName: (context) => OtpScreen(),
+  AwaitVerificationScreen.routeName: (context) => AwaitVerificationScreen(),
+  AwaitPasswordScreen.routeName: (context) => AwaitPasswordScreen(),
   HomeScreen.routeName: (context) => HomeScreen(),
   ProfileScreen.routeName: (context) => ProfileScreen(),
   TrendScreen.routeName: (context) => TrendScreen(),
@@ -35,5 +40,7 @@ final Map<String, WidgetBuilder> routes = {
   PairDeviceScreen.routeName: (context) => PairDeviceScreen(),
   SetTargetScreen.routeName: (context) => SetTargetScreen(),
   ChangePasswordScreen.routeName: (context) => ChangePasswordScreen(),
+  ChangeForgotPasswordScreen.routeName: (context) =>
+      ChangeForgotPasswordScreen(),
   NotificationScreen.routeName: (context) => NotificationScreen(),
 };
