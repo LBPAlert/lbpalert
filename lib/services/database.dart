@@ -4,25 +4,18 @@ import 'package:firebase_database/firebase_database.dart';
 
 class UserDatabaseService {
   final String uid;
-  UserDatabaseService({required this.uid});
+  UserDatabaseService(this.uid);
 
   final DatabaseReference _users = FirebaseDatabase.instance.ref("users");
 
-  Future createUserData(
-      String firstname,
-      String lastname,
-      String phoneNum,
-      String address,
-      String profilePic,
-      int painTarget,
-      String deviceID) async {
+  Future createUserData(String firstname, String lastname, String email,
+      String profilePic, int painTarget, String deviceID) async {
     return await _users
         .child(uid)
         .set({
           'firstname': firstname,
           'lastname': lastname,
-          'phone_number': phoneNum,
-          "address": address,
+          'email': email,
           "profile_pic": profilePic,
           "pain_target": painTarget,
           "device_id": deviceID,
@@ -31,15 +24,13 @@ class UserDatabaseService {
         .catchError((error) => print("Failed to add user: $error"));
   }
 
-  Future updateUserData(String firstname, String lastname, String phoneNum,
-      String address) async {
+  Future updateUserData(String firstname, String lastname, String email) async {
     return await _users
         .child(uid)
         .update({
           'firstname': firstname,
           'lastname': lastname,
-          'phone_number': phoneNum,
-          "address": address,
+          'email': email,
         })
         .then((value) => print("User Data Updated"))
         .catchError((error) => print("Failed to update user data: $error"));
@@ -78,18 +69,17 @@ class UserDatabaseService {
   // get streams
   FirebaseUserData _userDataFromSnapshot(DatabaseEvent event) {
     return FirebaseUserData(
-        uid: uid,
-        firstname: (event.snapshot.value as dynamic)['firstname'],
-        lastname: (event.snapshot.value as dynamic)['lastname'],
-        phoneNumber: (event.snapshot.value as dynamic)['phone_number'],
-        address: (event.snapshot.value as dynamic)['address'],
-        profilePic: (event.snapshot.value as dynamic)['profile_pic'],
-        painTarget: (event.snapshot.value as dynamic)['pain_target'],
-        deviceID: (event.snapshot.value as dynamic)['device_id']);
+        uid,
+        (event.snapshot.value as dynamic)['firstname'],
+        (event.snapshot.value as dynamic)['lastname'],
+        (event.snapshot.value as dynamic)['email'],
+        (event.snapshot.value as dynamic)['profile_pic'],
+        (event.snapshot.value as dynamic)['pain_target'],
+        (event.snapshot.value as dynamic)['device_id']);
   }
 
   Stream<FirebaseUserData> get userData {
-    return _users.child(uid).onChildChanged.map(_userDataFromSnapshot);
+    return _users.child(uid).onValue.map(_userDataFromSnapshot);
   }
 
   DatabaseReference get getUser {

@@ -1,41 +1,9 @@
 import 'package:flutter/material.dart';
-import 'package:firebase_database/firebase_database.dart';
-import 'package:lbpalert/services/database.dart';
 import '../../../size_config.dart';
-import 'package:lbpalert/services/auth.dart';
 
-class Greetings extends StatefulWidget {
-  @override
-  State<Greetings> createState() => _GreetingsState();
-}
-
-class _GreetingsState extends State<Greetings> {
-  String? name;
-  bool showName = false;
-
-  final AuthService _auth = AuthService();
-
-  @override
-  void initState() {
-    super.initState();
-    getUserFirstName();
-  }
-
-  void getUserFirstName() async {
-    final uid = _auth.getUserID;
-    final UserDatabaseService _users = UserDatabaseService(uid: uid);
-
-    DatabaseReference child = _users.getUser;
-    final userData = await child.get();
-    if (userData.exists) {
-      setState(() {
-        name = (userData.value as dynamic)["firstname"];
-      });
-      showName = true;
-    } else {
-      showName = false;
-    }
-  }
+class Greetings extends StatelessWidget {
+  final String firstname;
+  Greetings(this.firstname);
 
   @override
   Widget build(BuildContext context) {
@@ -43,7 +11,7 @@ class _GreetingsState extends State<Greetings> {
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
         Text(
-          showName ? "Hello, " + name! + "!" : "Hello there!",
+          "Hello, " + firstname + "!",
           style: TextStyle(
             fontSize: getProportionateScreenWidth(18),
             fontWeight: FontWeight.normal,

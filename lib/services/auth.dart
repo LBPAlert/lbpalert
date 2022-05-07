@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'package:lbpalert/constants.dart';
 import 'package:lbpalert/models/user.dart';
 import 'package:lbpalert/services/database.dart';
@@ -8,7 +9,11 @@ class AuthService {
 
   // create user object based on Firebase User
   FirebaseUser _userFromFirebaseUser(User? user) {
-    return FirebaseUser(uid: user!.uid);
+    if (user == null) {
+      return FirebaseUser("");
+    } else {
+      return FirebaseUser(user.uid);
+    }
   }
 
   // auth changes user stream
@@ -20,22 +25,27 @@ class AuthService {
     return _auth.currentUser!.uid;
   }
 
+  User? get getCurrentUser {
+    return _auth.currentUser;
+  }
+
   String? get getUserEmail {
     return _auth.currentUser!.email;
   }
 
-  // Sign in anon
-  Future signInAnon() async {
+  Future updateDisplayName(String firstname, String lastname) async {
     try {
-      UserCredential result = await _auth.signInAnonymously();
-      User? user = result.user;
-      return _userFromFirebaseUser(user);
-    } on FirebaseAuthException catch (e) {
-      if (e.code == 'user-not-found') {
-        print('No user found for that email.');
-      } else if (e.code == 'wrong-password') {
-        print('Wrong password provided for that user.');
-      }
+      final displayName = firstname + " " + lastname;
+      await _auth.currentUser!.updateDisplayName(displayName);
+    } catch (e) {
+      print(e.toString());
+      return null;
+    }
+  }
+
+  Future updateEmail(String email) async {
+    try {
+      await _auth.currentUser!.updateEmail(email);
     } catch (e) {
       print(e.toString());
       return null;
@@ -48,7 +58,11 @@ class AuthService {
       UserCredential result = await _auth.signInWithEmailAndPassword(
           email: email, password: password);
       User? user = result.user;
-      return _userFromFirebaseUser(user);
+      if (user!.emailVerified) {
+        return _userFromFirebaseUser(user);
+      } else {
+        return null;
+      }
     } catch (e) {
       print(e.toString());
       return null;
@@ -66,15 +80,21 @@ class AuthService {
   }
 
   // Register
-  Future registerEmailandPassword(String email, String password) async {
+  Future registerEmailandPassword(
+      String email, String password, String firstname, String lastname) async {
     try {
       UserCredential result = await _auth.createUserWithEmailAndPassword(
           email: email, password: password);
       User? user = result.user;
 
       // Create document for User Firestore Database
-      await UserDatabaseService(uid: user!.uid)
-          .createUserData("", "", "", "", "", defaultPainRating, "");
+      await UserDatabaseService(user!.uid).createUserData(
+          firstname,
+          lastname,
+          email,
+          "https://firebasestorage.googleapis.com/v0/b/lbpalert.appspot.com/o/profile_images%2FdefaultAvi.png?alt=media&token=fe42b668-769c-4464-a472-481b4576320f",
+          defaultPainRating,
+          "");
       return _userFromFirebaseUser(user);
     } on FirebaseAuthException catch (e) {
       if (e.code == 'weak-password') {
@@ -88,7 +108,7 @@ class AuthService {
     }
   }
 
-  // Change Password
+  // Change Password in app
   Future changePassword(
       String email, String old_password, String new_password) async {
     try {
@@ -114,10 +134,10 @@ class AuthService {
     }
   }
 
-  // Change Password
+  // Forgot Password Reset
   Future passwordResetEmail(String email) async {
     try {
-      await FirebaseAuth.instance.sendPasswordResetEmail(email: email);
+      await _auth.sendPasswordResetEmail(email: email);
       return "Password Reset Email Sent";
     } catch (e) {
       print(e.toString());

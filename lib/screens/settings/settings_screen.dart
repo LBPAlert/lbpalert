@@ -1,7 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:lbpalert/screens/settings/components/body.dart';
-import '/components/coustom_bottom_nav_bar.dart';
-import '/enums.dart';
 
 class SettingsScreen extends StatelessWidget {
   static String routeName = "/settings";
@@ -21,7 +19,6 @@ class SettingsScreen extends StatelessWidget {
         ),
       ),
       body: Body(),
-      //bottomNavigationBar: CustomBottomNavBar(selectedMenu: MenuState.profile),
     );
   }
 }

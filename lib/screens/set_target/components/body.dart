@@ -24,23 +24,9 @@ class _BodyState extends State<Body> {
     getUserTarget();
   }
 
-  // greys out the add and subtract buttons when the limits have been reached
-  void activateListeners() {
-    if (painTarget == maxPainRating) {
-      greyOutMax = true;
-    } else {
-      greyOutMax = false;
-    }
-    if (painTarget == minPainRating) {
-      greyOutMin = true;
-    } else {
-      greyOutMin = false;
-    }
-  }
-
   void getUserTarget() async {
     final uid = _auth.getUserID;
-    final UserDatabaseService _users = UserDatabaseService(uid: uid);
+    final UserDatabaseService _users = UserDatabaseService(uid);
 
     DatabaseReference child = _users.getUser;
     final userData = await child.get();
@@ -55,10 +41,12 @@ class _BodyState extends State<Body> {
     setState(() {
       if (painTarget == maxPainRating) {
         painTarget = maxPainRating;
+        greyOutMax = true;
       } else {
+        greyOutMin = false;
+        greyOutMax = false;
         painTarget = (painTarget! + 1);
       }
-      activateListeners();
     });
   }
 
@@ -66,10 +54,12 @@ class _BodyState extends State<Body> {
     setState(() {
       if (painTarget == minPainRating) {
         painTarget = minPainRating;
+        greyOutMin = true;
       } else {
+        greyOutMin = false;
+        greyOutMax = false;
         painTarget = (painTarget! - 1);
       }
-      activateListeners();
     });
   }
 
@@ -88,6 +78,7 @@ class _BodyState extends State<Body> {
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             FloatingActionButton(
+              heroTag: "btn_decrease",
               backgroundColor: greyOutMin ? Colors.grey : kPrimaryColor,
               splashColor: kSecondaryColor,
               onPressed: _decrementCounter,
@@ -105,6 +96,7 @@ class _BodyState extends State<Body> {
             ),
             SizedBox(width: 50),
             FloatingActionButton(
+              heroTag: "btn_increase",
               backgroundColor: greyOutMax ? Colors.grey : kPrimaryColor,
               splashColor: kSecondaryColor,
               onPressed: _incrementCounter,
@@ -119,9 +111,8 @@ class _BodyState extends State<Body> {
           child: DefaultButton(
             text: "Save",
             press: () async {
-              final user_id = _auth.getUserID;
-              await UserDatabaseService(uid: user_id)
-                  .updatePainTarget(painTarget!);
+              final uid = _auth.getUserID;
+              await UserDatabaseService(uid).updatePainTarget(painTarget!);
               Navigator.pushNamed(context, HomeScreen.routeName);
             },
           ),

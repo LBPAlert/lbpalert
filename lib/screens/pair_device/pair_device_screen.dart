@@ -25,7 +25,7 @@ class _PairDeviceScreenState extends State<PairDeviceScreen> {
 
   void checkDeviceInDb() async {
     final uid = _auth.getUserID;
-    final UserDatabaseService _users = UserDatabaseService(uid: uid);
+    final UserDatabaseService _users = UserDatabaseService(uid);
 
     DatabaseReference child = _users.getUser;
     final userData = await child.get();

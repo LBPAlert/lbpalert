@@ -5,7 +5,6 @@ import '../../../size_config.dart';
 import 'settings_menu.dart';
 import 'package:lbpalert/screens/set_target/set_target_screen.dart';
 import 'package:lbpalert/screens/update_account/update_account_screen.dart';
-//import 'package:flutter_settings_screens/flutter_settings_screens.dart';
 
 class Body extends StatelessWidget {
   @override

@@ -32,21 +32,21 @@ class _TrendsScreenState extends State<TrendsScreen> {
   @override
   void initState() {
     super.initState();
-    checkPastPredictions().then((newdata) {
-      setState(() {
-        trendsData = newdata;
-      });
-    });
-    _selectionBehavior = SelectionBehavior(
-        // Enables the selection
-        enable: true);
-    _zoomPanBehavior = ZoomPanBehavior(
-      enablePinching: true,
-      zoomMode: ZoomMode.x,
-      enablePanning: true,
-      enableSelectionZooming: true,
-    );
-    _tooltip = TooltipBehavior(enable: true);
+    // checkPastPredictions().then((newdata) {
+    //   setState(() {
+    //     trendsData = newdata;
+    //   });
+    // });
+    // _selectionBehavior = SelectionBehavior(
+    //     // Enables the selection
+    //     enable: true);
+    // _zoomPanBehavior = ZoomPanBehavior(
+    //   enablePinching: true,
+    //   zoomMode: ZoomMode.x,
+    //   enablePanning: true,
+    //   enableSelectionZooming: true,
+    // );
+    // _tooltip = TooltipBehavior(enable: true);
   }
 
   Future<List<_ChartData>> checkPastPredictions() async {

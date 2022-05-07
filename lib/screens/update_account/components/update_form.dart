@@ -1,15 +1,13 @@
 import 'package:lbpalert/helper/keyboard.dart';
 import 'package:lbpalert/screens/home/home_screen.dart';
-import 'package:lbpalert/screens/profile/profile_screen.dart';
 import 'package:lbpalert/services/auth.dart';
-import 'package:lbpalert/services/database.dart';
 import 'package:flutter/material.dart';
+import 'package:lbpalert/services/database.dart';
 import '/components/custom_surfix_icon.dart';
 import '/components/default_button.dart';
 import '/components/form_error.dart';
 import '../../../constants.dart';
 import '../../../size_config.dart';
-import 'package:lbpalert/screens/settings/settings_screen.dart';
 
 class UpdateForm extends StatefulWidget {
   @override
@@ -57,9 +55,11 @@ class _UpdateFormState extends State<UpdateForm> {
             press: () async {
               if (_formKey.currentState!.validate()) {
                 _formKey.currentState!.save();
-                final user_id = _auth.getUserID;
-                // await UserDatabaseService(uid: user_id).updateUserData(
-                //     firstName!, lastName!, phoneNumber!, address!);
+                final uid = _auth.getUserID;
+                await UserDatabaseService(uid)
+                    .updateUserData(firstName!, lastName!, email!);
+                _auth.updateDisplayName(firstName!, lastName!);
+                _auth.updateEmail(email!);
                 KeyboardUtil.hideKeyboard(context);
                 Navigator.pushNamed(context, HomeScreen.routeName);
               }
