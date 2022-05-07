@@ -60,8 +60,9 @@ class _SignUpFormState extends State<SignUpForm> {
             press: () async {
               if (_formKey.currentState!.validate()) {
                 _formKey.currentState!.save();
-                dynamic result =
-                    await _auth.registerEmailandPassword(email!, password!);
+                dynamic result = await _auth.registerEmailandPassword(
+                    email!, password!, firstName!, lastName!);
+                _auth.updateDisplayName(firstName!, lastName!);
                 if (result == null) {
                   setState(() {
                     error = "Please supply a valid email";
@@ -69,8 +70,7 @@ class _SignUpFormState extends State<SignUpForm> {
                 } else {
                   // if all are valid then go to success screen
                   Navigator.pushNamed(
-                      context, AwaitVerificationScreen.routeName,
-                      arguments: {'uid': result.uid});
+                      context, AwaitVerificationScreen.routeName);
                 }
               }
             },

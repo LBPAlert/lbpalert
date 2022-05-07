@@ -21,7 +21,7 @@ class _UnpairState extends State<Unpair> {
 
   @override
   Widget build(BuildContext context) {
-    final userId = _auth.getUserID;
+    final uid = _auth.getUserID;
     return SafeArea(
       child: SizedBox(
         width: double.infinity,
@@ -38,7 +38,7 @@ class _UnpairState extends State<Unpair> {
                 DefaultButton(
                     text: "Unpair",
                     press: () async {
-                      await UserDatabaseService(uid: userId).updateDeviceID("");
+                      await UserDatabaseService(uid).updateDeviceID("");
                       KeyboardUtil.hideKeyboard(context);
                       Navigator.pushNamed(context, HomeScreen.routeName);
                     }),

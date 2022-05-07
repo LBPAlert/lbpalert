@@ -3,6 +3,7 @@ import 'package:lbpalert/screens/await_verification/components/body.dart';
 
 class AwaitVerificationScreen extends StatelessWidget {
   static String routeName = "/await_verification";
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(

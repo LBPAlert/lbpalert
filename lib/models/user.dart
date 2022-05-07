@@ -1,26 +1,18 @@
 class FirebaseUser {
   final String uid;
 
-  FirebaseUser({required this.uid});
+  FirebaseUser(this.uid);
 }
 
 class FirebaseUserData {
   final String uid;
   final String firstname;
   final String lastname;
-  final String phoneNumber;
-  final String address;
+  final String email;
   final String profilePic;
   final int painTarget;
   final String deviceID;
 
-  FirebaseUserData(
-      {required this.uid,
-      required this.firstname,
-      required this.lastname,
-      required this.phoneNumber,
-      required this.address,
-      required this.profilePic,
-      required this.painTarget,
-      required this.deviceID});
+  FirebaseUserData(this.uid, this.firstname, this.lastname, this.email,
+      this.profilePic, this.painTarget, this.deviceID);
 }

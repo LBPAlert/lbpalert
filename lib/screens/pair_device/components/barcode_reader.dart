@@ -23,12 +23,12 @@ class _PairBarcodeState extends State<PairBarcode> {
 
   void readBarcode() async {
     String barcodeScanRes;
-    final userId = _auth.getUserID;
+    final uid = _auth.getUserID;
 
     try {
       barcodeScanRes = await FlutterBarcodeScanner.scanBarcode(
           '$Colors.black', "Cancel", true, ScanMode.QR);
-      await UserDatabaseService(uid: userId).updateDeviceID(barcodeScanRes);
+      await UserDatabaseService(uid).updateDeviceID(barcodeScanRes);
       KeyboardUtil.hideKeyboard(context);
       Navigator.pushNamed(context, HomeScreen.routeName);
     } on PlatformException {

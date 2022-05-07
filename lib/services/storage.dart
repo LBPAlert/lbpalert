@@ -15,7 +15,7 @@ class StorageService {
           .putFile(imageFile!);
       TaskSnapshot snapshot = await uploadTask;
       String profileImageUrl = await snapshot.ref.getDownloadURL();
-      await UserDatabaseService(uid: userId).updateProfilePic(profileImageUrl);
+      await UserDatabaseService(userId).updateProfilePic(profileImageUrl);
       return profileImageUrl;
     } catch (e) {
       print(e.toString());

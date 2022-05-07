@@ -36,8 +36,8 @@ class _ReadSensorDataState extends State<ReadSensorData> {
   void initState() {
     super.initState();
     // activateListeners();
-    checkPastPredictions();
-    randomIntegerGenerator();
+    // checkPastPredictions();
+    // randomIntegerGenerator();
     FirebaseMessaging.instance.getInitialMessage();
     // App in foreground
     FirebaseMessaging.onMessage.listen((message) {
@@ -228,7 +228,7 @@ class _ReadSensorDataState extends State<ReadSensorData> {
   void getUserTarget() async {
     final AuthService _auth = AuthService();
     final uid = _auth.getUserID;
-    final UserDatabaseService _users = UserDatabaseService(uid: uid);
+    final UserDatabaseService _users = UserDatabaseService(uid);
 
     DatabaseReference child = _users.getUser;
     final userData = await child.get();
