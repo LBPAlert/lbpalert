@@ -49,8 +49,6 @@ class _BodyState extends State<Body> {
   Future checkEmailVerified() async {
     await _auth.getCurrentUser!.reload();
 
-    print(isEmailVerified);
-
     setState(() {
       isEmailVerified = _auth.getCurrentUser!.emailVerified;
     });
