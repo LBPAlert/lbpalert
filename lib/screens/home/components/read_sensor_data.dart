@@ -38,7 +38,12 @@ class _ReadSensorDataState extends State<ReadSensorData> {
     // activateListeners();
     // checkPastPredictions();
     // randomIntegerGenerator();
-    FirebaseMessaging.instance.getInitialMessage();
+    FirebaseMessaging.instance.getInitialMessage().then((message) {
+      if (message != null) {
+        final routeFromMessage = message.data["route"];
+        Navigator.of(context).pushNamed(routeFromMessage);
+      }
+    });
     // App in foreground
     FirebaseMessaging.onMessage.listen((message) {
       if (message.notification != null) {
