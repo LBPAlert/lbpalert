@@ -20,8 +20,8 @@ class Body extends StatelessWidget {
     }
 
     return SafeArea(
-      child: SingleChildScrollView(
-        child: Column(
+        child: SingleChildScrollView(
+      child: Column(
           children: deviceInDB
               ? [
                   SizedBox(height: getProportionateScreenWidth(10)),
@@ -31,7 +31,7 @@ class Body extends StatelessWidget {
                   SizedBox(height: getProportionateScreenWidth(20)),
                   SectionTitle(title: 'Activity'),
                   SizedBox(height: getProportionateScreenWidth(10)),
-                  ReadSensorData(),
+                  ReadSensorData(newUserData.painTarget, newUserData.deviceID),
                 ]
               : [
                   SizedBox(height: getProportionateScreenWidth(10)),
@@ -68,9 +68,7 @@ class Body extends StatelessWidget {
                       Navigator.pushNamed(context, PairDeviceScreen.routeName);
                     },
                   ),
-                ],
-        ),
-      ),
-    );
+                ]),
+    ));
   }
 }

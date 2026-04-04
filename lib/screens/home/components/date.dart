@@ -1,35 +1,13 @@
 import 'package:flutter/material.dart';
-
+import 'package:lbpalert/constants.dart';
 import '../../../size_config.dart';
 
 class DateSection extends StatelessWidget {
   DateSection({Key? key, required this.today}) : super(key: key);
 
   final DateTime today;
-  final MONTHS = [
-    "JAN",
-    "FEB",
-    "MAR",
-    "APR",
-    "MAY",
-    "JUN",
-    "JUL",
-    "AUG",
-    "SEP",
-    "OCT",
-    "NOV",
-    "DEC",
-  ];
-  final DAYS = [
-    "NULL",
-    "MONDAY",
-    "TUESDAY",
-    "WEDNESDAY",
-    "THURSDAY",
-    "FRIDAY",
-    "SATURDAY",
-    "SUNDAY",
-  ];
+  final months = MONTHS;
+  final days = DAYS;
 
   @override
   Widget build(BuildContext context) {
@@ -37,9 +15,9 @@ class DateSection extends StatelessWidget {
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
         Text(
-          DAYS[today.weekday] +
+          days[today.weekday] +
               ', ' +
-              MONTHS[today.month - 1] +
+              months[today.month - 1] +
               ' ' +
               today.day.toString(),
           style: TextStyle(
